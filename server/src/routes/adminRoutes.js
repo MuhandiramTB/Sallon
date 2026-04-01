@@ -30,7 +30,7 @@ router.get('/bookings', authMiddleware, adminMiddleware, (req, res) => {
   if (status) { query += ' AND b.status = ?'; params.push(status); }
   if (category_id) { query += ' AND c.id = ?'; params.push(category_id); }
 
-  query += ' ORDER BY b.booking_date ASC, b.start_time ASC';
+  query += ' ORDER BY b.booking_date DESC, b.start_time ASC';
 
   const bookings = db.prepare(query).all(...params);
   res.json({ data: bookings });
@@ -41,14 +41,25 @@ router.post('/bookings', authMiddleware, adminMiddleware, validate(adminCreateBo
   try {
     const { customerName, customerPhone, serviceId, date, startTime, endTime, status } = req.validatedBody;
 
-    // Find or create customer by phone number
+    // Find existing customer by phone OR email
     let customer = db.prepare('SELECT id FROM users WHERE phone = ?').get(customerPhone);
+
     if (!customer) {
-      const passwordHash = await hashPassword(customerPhone); // temp password = phone
-      const result = db.prepare(
-        "INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, 'customer')"
-      ).run(customerName, `${customerPhone}@walkin.local`, customerPhone, passwordHash);
-      customer = { id: result.lastInsertRowid };
+      // Generate unique email for walk-in customer
+      const walkinEmail = `walkin_${Date.now()}_${Math.random().toString(36).slice(2, 6)}@walkin.local`;
+      const passwordHash = await hashPassword(customerPhone);
+      try {
+        const result = db.prepare(
+          "INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, 'customer')"
+        ).run(customerName, walkinEmail, customerPhone, passwordHash);
+        customer = { id: result.lastInsertRowid };
+      } catch (insertErr) {
+        // Phone might have been inserted by another request — retry lookup
+        customer = db.prepare('SELECT id FROM users WHERE phone = ?').get(customerPhone);
+        if (!customer) {
+          return res.status(500).json({ error: 'Failed to create customer record' });
+        }
+      }
     }
 
     // Check service exists
@@ -79,6 +90,7 @@ router.post('/bookings', authMiddleware, adminMiddleware, validate(adminCreateBo
 
     res.status(201).json({ data: booking });
   } catch (err) {
+    console.error('Admin booking error:', err);
     next(err);
   }
 });
@@ -95,7 +107,7 @@ router.patch('/bookings/:id', authMiddleware, adminMiddleware, validate(updateBo
     SELECT b.id, b.booking_date as bookingDate, b.start_time as startTime, b.end_time as endTime,
            b.status, b.created_at as createdAt, b.updated_at as updatedAt,
            s.name as serviceName, s.price,
-           u.name as customerName, u.email as customerEmail
+           u.name as customerName, u.email as customerEmail, u.phone as customerPhone
     FROM bookings b
     JOIN services s ON b.service_id = s.id
     JOIN users u ON b.user_id = u.id

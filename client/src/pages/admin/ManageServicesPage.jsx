@@ -6,6 +6,7 @@ import Select from '../../ui/Select.jsx';
 import Modal from '../../ui/Modal.jsx';
 import Card from '../../ui/Card.jsx';
 import EmptyState from '../../ui/EmptyState.jsx';
+import ConfirmModal from '../../ui/ConfirmModal.jsx';
 import { SkeletonPage } from '../../ui/Skeleton.jsx';
 
 export default function ManageServicesPage() {
@@ -16,6 +17,8 @@ export default function ManageServicesPage() {
   const [editingService, setEditingService] = useState(null);
   const [form, setForm] = useState({ categoryId: '', name: '', description: '', durationMinutes: 30, price: 0, isPackage: false, packageServiceIds: [] });
   const [error, setError] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadData = async () => {
     try {
@@ -69,10 +72,11 @@ export default function ManageServicesPage() {
     catch (err) { alert(err.message); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this service?')) return;
-    try { await api(`/services/${id}`, { method: 'DELETE' }); loadData(); }
-    catch (err) { alert(err.message); }
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try { await api(`/services/${deleteTarget.id}`, { method: 'DELETE' }); setDeleteTarget(null); loadData(); }
+    catch (err) { setDeleteTarget(null); alert(err.message); }
+    finally { setIsDeleting(false); }
   };
 
   const togglePackageItem = (svcId) => {
@@ -136,7 +140,7 @@ export default function ManageServicesPage() {
                     {svc.isActive ? 'Active' : 'Inactive'}
                   </button>
                   <Button variant="ghost" onClick={() => openEdit(svc)} className="text-sm">Edit</Button>
-                  <Button variant="ghost" onClick={() => handleDelete(svc.id)} className="text-sm text-error hover:text-error">Delete</Button>
+                  <Button variant="ghost" onClick={() => setDeleteTarget(svc)} className="text-sm text-error hover:text-error">Delete</Button>
                 </div>
               </div>
             </Card>
@@ -186,6 +190,18 @@ export default function ManageServicesPage() {
           <Button type="submit" className="w-full">{editingService ? 'Update' : 'Create'} {form.isPackage ? 'Package' : 'Service'}</Button>
         </form>
       </Modal>
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        title={deleteTarget?.isPackage ? 'Delete Package?' : 'Delete Service?'}
+        message={deleteTarget ? `Are you sure you want to delete "${deleteTarget.name}"? This cannot be undone.` : ''}
+        confirmLabel="Yes, Delete"
+        cancelLabel="Keep It"
+        variant="danger"
+      />
     </div>
   );
 }
