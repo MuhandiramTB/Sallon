@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api.js';
 import CategoryList from '../components/CategoryList.jsx';
 import ServiceCard from '../components/ServiceCard.jsx';
-import Spinner from '../ui/Spinner.jsx';
+import EmptyState from '../ui/EmptyState.jsx';
+import { SkeletonPage } from '../ui/Skeleton.jsx';
 
 export default function ServicesPage() {
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedCategory = searchParams.get('category') ? Number(searchParams.get('category')) : null;
 
   useEffect(() => {
     Promise.all([api('/services'), api('/categories')])
@@ -19,20 +22,34 @@ export default function ServicesPage() {
       .finally(() => setIsLoading(false));
   }, []);
 
+  const handleCategorySelect = (catId) => {
+    if (catId) {
+      setSearchParams({ category: catId });
+    } else {
+      setSearchParams({});
+    }
+  };
+
   const filtered = selectedCategory
     ? services.filter((s) => s.categoryId === selectedCategory)
     : services;
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <SkeletonPage cards={6} />;
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Our Services</h2>
-      <CategoryList categories={categories} selectedId={selectedCategory} onSelect={setSelectedCategory} />
+    <div className="py-6 animate-fade-in">
+      <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-6">Our Services</h1>
+      <CategoryList categories={categories} selectedId={selectedCategory} onSelect={handleCategorySelect} />
       {filtered.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">No services available in this category.</p>
+        <EmptyState
+          icon="🔍"
+          title="No services found"
+          description="No services available in this category yet."
+          actionLabel="View All Services"
+          onAction={() => handleCategorySelect(null)}
+        />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map((svc) => (
             <ServiceCard key={svc.id} service={svc} />
           ))}

@@ -9,5 +9,5 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
   if (!user) return <Navigate to="/login" replace />;
   if (adminOnly && user.role !== 'admin') return <Navigate to="/" replace />;
 
-  return children;
+  return <div className="animate-fade-in">{children}</div>;
 }

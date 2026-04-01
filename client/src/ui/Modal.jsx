@@ -1,13 +1,26 @@
+import { useEffect } from 'react';
+
 export default function Modal({ isOpen, onClose, title, children }) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose}></div>
-      <div className="relative bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl min-h-[44px] min-w-[44px] flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in">
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-surface rounded-t-2xl sm:rounded-xl shadow-xl p-6 w-full sm:max-w-md mx-0 sm:mx-4 max-h-[85vh] overflow-y-auto animate-slide-up">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
+          <button
+            onClick={onClose}
+            className="text-text-muted hover:text-text-primary text-2xl min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+            aria-label="Close"
+          >
             &times;
           </button>
         </div>

@@ -27,23 +27,14 @@ export default function BookingPage() {
   }, [serviceId]);
 
   const handleBook = async () => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
+    if (!user) { navigate('/login'); return; }
     if (!selectedSlot) return;
-
     setIsSubmitting(true);
     setError('');
     try {
       const res = await api('/bookings', {
         method: 'POST',
-        body: {
-          serviceId: Number(serviceId),
-          date: selectedSlot.date,
-          startTime: selectedSlot.startTime,
-          endTime: selectedSlot.endTime,
-        },
+        body: { serviceId: Number(serviceId), date: selectedSlot.date, startTime: selectedSlot.startTime, endTime: selectedSlot.endTime },
       });
       setSuccess(res.data);
       setSelectedSlot(null);
@@ -55,25 +46,29 @@ export default function BookingPage() {
   };
 
   if (isLoading) return <Spinner />;
-  if (!service) return <p className="text-center text-red-500 py-8">{error || 'Service not found'}</p>;
+  if (!service) return <p className="text-center text-error py-8">{error || 'Service not found'}</p>;
 
   if (success) {
     return (
-      <div className="max-w-md mx-auto mt-10">
+      <div className="max-w-md mx-auto mt-10 animate-scale-in">
         <Card className="text-center">
-          <div className="text-green-500 text-5xl mb-4">&#10003;</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Booking Confirmed!</h2>
-          <p className="text-gray-600 mb-4">Your appointment has been booked.</p>
-          <div className="bg-gray-50 rounded-lg p-4 text-left space-y-2">
-            <p><span className="font-medium">Service:</span> {success.serviceName}</p>
-            <p><span className="font-medium">Date:</span> {formatDate(success.bookingDate)}</p>
-            <p><span className="font-medium">Time:</span> {formatTime(success.startTime)} - {formatTime(success.endTime)}</p>
-            <p><span className="font-medium">Price:</span> Rs. {success.price}</p>
-            <p><span className="font-medium">Status:</span> <span className="text-amber-600 font-medium">Pending</span></p>
+          <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-5 animate-check-draw">
+            <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
           </div>
-          <div className="flex gap-2 mt-6">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">Booking Confirmed!</h2>
+          <p className="text-text-secondary mb-5">Your appointment has been booked successfully.</p>
+          <div className="bg-bg rounded-xl p-5 text-left space-y-3 mb-6">
+            <div className="flex justify-between"><span className="text-text-secondary text-sm">Service</span><span className="font-medium text-sm">{success.serviceName}</span></div>
+            <div className="flex justify-between"><span className="text-text-secondary text-sm">Date</span><span className="font-medium text-sm">{formatDate(success.bookingDate)}</span></div>
+            <div className="flex justify-between"><span className="text-text-secondary text-sm">Time</span><span className="font-medium text-sm">{formatTime(success.startTime)} - {formatTime(success.endTime)}</span></div>
+            <div className="flex justify-between"><span className="text-text-secondary text-sm">Price</span><span className="font-bold text-primary">Rs. {success.price}</span></div>
+            <div className="flex justify-between"><span className="text-text-secondary text-sm">Status</span><span className="text-amber-600 font-medium text-sm">Pending Confirmation</span></div>
+          </div>
+          <div className="flex gap-3">
             <Button onClick={() => navigate('/my-bookings')} className="flex-1">My Bookings</Button>
-            <Button onClick={() => navigate('/services')} className="flex-1 bg-gray-500 hover:bg-gray-600">Book Another</Button>
+            <Button onClick={() => navigate('/services')} variant="secondary" className="flex-1">Book Another</Button>
           </div>
         </Card>
       </div>
@@ -81,33 +76,38 @@ export default function BookingPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <Card className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">{service.name}</h2>
-        {service.description && <p className="text-gray-500 mt-1">{service.description}</p>}
-        <div className="flex gap-4 mt-3 text-sm text-gray-600">
-          <span>{service.durationMinutes} min</span>
-          <span className="font-semibold text-indigo-600">Rs. {service.price}</span>
-          <span className="text-gray-400">{service.categoryName}</span>
+    <div className="max-w-2xl mx-auto py-6 animate-fade-in">
+      <Card className="mb-5">
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-text-primary">{service.name}</h1>
+            {service.description && <p className="text-text-secondary mt-1">{service.description}</p>}
+          </div>
+          <span className="text-xs font-medium text-primary bg-primary-light px-2.5 py-1 rounded-full flex-shrink-0">{service.categoryName}</span>
+        </div>
+        <div className="flex items-center gap-4 mt-4">
+          <span className="text-2xl font-bold text-primary">Rs. {service.price}</span>
+          <span className="text-sm text-text-muted bg-gray-100 px-3 py-1 rounded-full">{service.durationMinutes} min</span>
         </div>
       </Card>
 
-      {error && <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">{error}</div>}
+      {error && <div className="bg-red-50 text-error p-4 rounded-xl mb-4 text-sm font-medium animate-slide-up">{error}</div>}
 
-      <Card>
-        <SlotPicker serviceId={Number(serviceId)} onSelectSlot={setSelectedSlot} />
+      <Card><SlotPicker serviceId={Number(serviceId)} onSelectSlot={setSelectedSlot} /></Card>
 
-        {selectedSlot && (
-          <div className="mt-6 pt-4 border-t">
-            <p className="text-gray-700 mb-3">
-              <span className="font-medium">Selected:</span> {formatDate(selectedSlot.date)} at {formatTime(selectedSlot.startTime)}
-            </p>
-            <Button onClick={handleBook} disabled={isSubmitting} className="w-full">
-              {isSubmitting ? 'Booking...' : `Confirm Booking — Rs. ${service.price}`}
+      {selectedSlot && (
+        <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border p-4 shadow-xl z-30 animate-slide-up sm:static sm:mt-5 sm:border-0 sm:shadow-none sm:p-0 sm:bg-transparent">
+          <div className="container mx-auto max-w-2xl flex items-center justify-between gap-4">
+            <div className="text-sm">
+              <span className="text-text-secondary">{formatDate(selectedSlot.date)}</span>
+              <span className="font-semibold text-text-primary ml-2">{formatTime(selectedSlot.startTime)}</span>
+            </div>
+            <Button onClick={handleBook} isLoading={isSubmitting} className="min-w-[180px]">
+              Confirm — Rs. {service.price}
             </Button>
           </div>
-        )}
-      </Card>
+        </div>
+      )}
     </div>
   );
 }

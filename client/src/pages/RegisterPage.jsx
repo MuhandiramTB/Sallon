@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../lib/api.js';
 import Input from '../ui/Input.jsx';
 import Button from '../ui/Button.jsx';
+import Card from '../ui/Card.jsx';
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
@@ -23,74 +24,44 @@ export default function RegisterPage() {
     e.preventDefault();
     setIsSubmitting(true);
     setServerError('');
-
     try {
-      const res = await api('/auth/register', {
-        method: 'POST',
-        body: form,
-      });
+      const res = await api('/auth/register', { method: 'POST', body: form });
       login(res.data.user, res.data.token);
       navigate('/');
     } catch (err) {
-      if (err.details) {
-        setErrors(err.details);
-      } else {
-        setServerError(err.message);
-      }
+      if (err.details) setErrors(err.details);
+      else setServerError(err.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Create Account</h2>
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
-        {serverError && (
-          <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">{serverError}</div>
-        )}
-        <Input
-          label="Full Name"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          error={errors.name}
-          required
-        />
-        <Input
-          label="Email"
-          name="email"
-          type="email"
-          value={form.email}
-          onChange={handleChange}
-          error={errors.email}
-          required
-        />
-        <Input
-          label="Phone (optional)"
-          name="phone"
-          type="tel"
-          value={form.phone}
-          onChange={handleChange}
-          error={errors.phone}
-        />
-        <Input
-          label="Password"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          error={errors.password}
-          required
-        />
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? 'Creating Account...' : 'Register'}
-        </Button>
-        <p className="text-center text-sm text-gray-500 mt-4">
+    <div className="min-h-[70vh] flex items-center justify-center px-4 animate-fade-in">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-text-primary">Create Account</h1>
+          <p className="text-text-secondary mt-2">Book your salon appointments online</p>
+        </div>
+        <Card>
+          <form onSubmit={handleSubmit}>
+            {serverError && (
+              <div className="bg-red-50 text-error p-3.5 rounded-lg mb-5 text-sm font-medium animate-slide-up">{serverError}</div>
+            )}
+            <Input label="Full Name" name="name" value={form.name} onChange={handleChange} error={errors.name} placeholder="Enter your name" required />
+            <Input label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="your@email.com" required />
+            <Input label="Phone (optional)" name="phone" type="tel" value={form.phone} onChange={handleChange} error={errors.phone} placeholder="07X XXX XXXX" />
+            <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="Min 6 characters" required />
+            <Button type="submit" isLoading={isSubmitting} className="w-full mt-2">
+              {isSubmitting ? 'Creating account...' : 'Create Account'}
+            </Button>
+          </form>
+        </Card>
+        <p className="text-center text-sm text-text-secondary mt-6">
           Already have an account?{' '}
-          <Link to="/login" className="text-indigo-600 hover:underline">Login</Link>
+          <Link to="/login" className="text-primary font-medium hover:underline">Sign in</Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 }

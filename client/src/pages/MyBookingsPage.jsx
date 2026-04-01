@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api.js';
 import BookingCard from '../components/BookingCard.jsx';
-import Spinner from '../ui/Spinner.jsx';
+import EmptyState from '../ui/EmptyState.jsx';
+import { SkeletonPage } from '../ui/Skeleton.jsx';
 
 export default function MyBookingsPage() {
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const loadBookings = async () => {
     try {
@@ -28,15 +31,21 @@ export default function MyBookingsPage() {
     }
   };
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <SkeletonPage cards={3} />;
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">My Bookings</h2>
+    <div className="py-6 animate-fade-in">
+      <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-6">My Bookings</h1>
       {bookings.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">No bookings yet.</p>
+        <EmptyState
+          icon="📅"
+          title="No bookings yet"
+          description="Book your first salon appointment and it will appear here."
+          actionLabel="Browse Services"
+          onAction={() => navigate('/services')}
+        />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {bookings.map((b) => (
             <BookingCard key={b.id} booking={b} onCancel={handleCancel} />
           ))}

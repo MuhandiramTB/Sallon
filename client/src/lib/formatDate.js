@@ -18,16 +18,24 @@ export function formatTime(timeStr) {
 }
 
 export function getTodayDate() {
-  return new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 export function getNextDays(count = 14) {
   const days = [];
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   for (let i = 0; i < count; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
-    days.push(d.toISOString().split('T')[0]);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    days.push(`${year}-${month}-${day}`);
   }
   return days;
 }
