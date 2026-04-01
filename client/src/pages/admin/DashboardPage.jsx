@@ -60,7 +60,6 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <h2 className="text-lg font-semibold text-text-primary mb-4">Today's Schedule</h2>
       {todayBookings.length === 0 ? (
         <Card className="text-center py-8">
           <p className="text-text-secondary">No bookings for today</p>

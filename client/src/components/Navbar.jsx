@@ -74,9 +74,10 @@ export default function Navbar() {
   const adminLinks = [
     { to: '/admin', label: 'Dashboard', icon: icons.dashboard },
     { to: '/admin/quick-booking', label: 'Quick Book', icon: icons.quickBook },
+    { to: '/services', label: 'My Services', icon: icons.services },
     { to: '/admin/bookings', label: 'Bookings', icon: icons.bookings },
     { to: '/admin/categories', label: 'Categories', icon: icons.categories },
-    { to: '/admin/services', label: 'Services', icon: icons.manageServices },
+    { to: '/admin/services', label: 'Manage', icon: icons.manageServices },
     { to: '/admin/operating-hours', label: 'Hours', icon: icons.hours },
   ];
 
