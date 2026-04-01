@@ -1,8 +1,9 @@
 const variants = {
-  primary: 'bg-primary text-white hover:bg-primary-hover shadow-md hover:shadow-lg active:scale-[0.97]',
-  secondary: 'bg-white text-primary border-2 border-primary hover:bg-primary-light active:scale-[0.97]',
+  primary: 'bg-gradient-gold text-primary font-semibold hover:shadow-lg hover:shadow-accent/20 active:scale-[0.97]',
+  secondary: 'bg-white text-text-primary border border-border hover:border-accent/50 hover:text-accent active:scale-[0.97]',
   danger: 'bg-error text-white hover:bg-red-600 shadow-md hover:shadow-lg active:scale-[0.97]',
-  ghost: 'bg-transparent text-text-secondary hover:bg-gray-100 active:scale-[0.97]',
+  ghost: 'bg-transparent text-text-secondary hover:bg-gray-100 hover:text-text-primary active:scale-[0.97]',
+  dark: 'bg-primary text-white hover:bg-primary-hover shadow-md hover:shadow-lg active:scale-[0.97]',
 };
 
 export default function Button({
@@ -18,7 +19,7 @@ export default function Button({
     <button
       type={type}
       disabled={disabled || isLoading}
-      className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-medium text-[15px] min-h-[44px] transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 cursor-pointer ${variants[variant] || variants.primary} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-medium text-[15px] min-h-[44px] transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 cursor-pointer ${variants[variant] || variants.primary} ${className}`}
       {...props}
     >
       {isLoading && (

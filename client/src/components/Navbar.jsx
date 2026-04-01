@@ -62,8 +62,8 @@ export default function Navbar() {
       to={to}
       className={`text-sm font-medium min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ${
         isActive(to)
-          ? 'bg-white/20 text-white'
-          : 'text-white/70 hover:text-white hover:bg-white/10'
+          ? 'bg-accent/20 text-accent'
+          : 'text-white/60 hover:text-white hover:bg-white/10'
       }`}
     >
       {icon}
@@ -125,13 +125,12 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2 ml-2">
-                {navLink('/login', 'Login', icons.profile)}
+              <div className="flex items-center ml-2">
                 <Link
-                  to="/register"
-                  className="text-sm font-medium bg-white text-primary px-4 py-2 rounded-lg hover:bg-white/90 transition-all min-h-[44px] flex items-center active:scale-[0.97]"
+                  to="/login"
+                  className="text-sm font-semibold bg-gradient-gold text-primary px-5 py-2 rounded-lg hover:shadow-lg hover:shadow-accent/20 transition-all min-h-[44px] flex items-center active:scale-[0.97]"
                 >
-                  Register
+                  Sign In
                 </Link>
               </div>
             )}
@@ -163,7 +162,7 @@ export default function Navbar() {
                   key={link.to}
                   to={link.to}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all min-h-[48px] ${
-                    isActive(link.to) ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'
+                    isActive(link.to) ? 'bg-accent/20 text-accent' : 'text-white/70 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   {link.icon}
@@ -194,14 +193,9 @@ export default function Navbar() {
                     </button>
                   </>
                 ) : (
-                  <>
-                    <Link to="/login" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 min-h-[48px]">
-                      {icons.profile} Login
-                    </Link>
-                    <Link to="/register" className="flex items-center justify-center gap-2 mx-4 mt-2 py-3 rounded-xl text-sm font-bold bg-white text-primary min-h-[48px]">
-                      Register
-                    </Link>
-                  </>
+                  <Link to="/login" className="flex items-center justify-center gap-2 mx-4 mt-2 py-3 rounded-xl text-sm font-bold bg-gradient-gold text-primary min-h-[48px]">
+                    Sign In
+                  </Link>
                 )}
               </div>
             </nav>
@@ -209,16 +203,6 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Guest: show Services link if not logged in (simple top bar for non-admin non-logged users) */}
-      {!user && (
-        <div className="md:hidden bg-primary/5 border-b border-border">
-          <div className="container mx-auto px-4 py-1 flex gap-2">
-            <Link to="/services" className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${isActive('/services') ? 'bg-primary text-white' : 'text-text-secondary hover:text-primary'}`}>
-              Services
-            </Link>
-          </div>
-        </div>
-      )}
     </>
   );
 }

@@ -1,10 +1,14 @@
 @import "tailwindcss";
 
+/* stylelint-disable at-rule-no-unknown */
 @theme {
-  --color-primary: var(--brand-primary, #6366f1);
-  --color-primary-hover: var(--brand-primary-hover, #4f46e5);
-  --color-primary-light: var(--brand-primary-light, #e0e7ff);
-  --color-secondary: var(--brand-secondary, #8b5cf6);
+  --color-primary: #1e1e2e;
+  --color-primary-hover: #2a2a3d;
+  --color-primary-light: #f0ebe3;
+  --color-accent: #c9a96e;
+  --color-accent-hover: #b8953d;
+  --color-accent-light: #faf6ef;
+  --color-secondary: #c9a96e;
   --color-success: #10b981;
   --color-success-light: #d1fae5;
   --color-warning: #f59e0b;
@@ -12,16 +16,14 @@
   --color-error: #ef4444;
   --color-error-light: #fee2e2;
   --color-surface: #ffffff;
-  --color-bg: #f8fafc;
-  --color-border: #e2e8f0;
-  --color-text-primary: #1e293b;
-  --color-text-secondary: #64748b;
-  --color-text-muted: #94a3b8;
-  --color-status-pending: #f59e0b;
-  --color-status-confirmed: #10b981;
-  --color-status-completed: #3b82f6;
-  --color-status-cancelled: #6b7280;
+  --color-bg: #faf9f7;
+  --color-bg-dark: #1e1e2e;
+  --color-border: #e8e4de;
+  --color-text-primary: #1e1e2e;
+  --color-text-secondary: #6b6b7b;
+  --color-text-muted: #9e9eae;
 }
+/* stylelint-enable at-rule-no-unknown */
 
 @layer base {
   body {
@@ -29,61 +31,43 @@
     color: var(--color-text-primary);
     background-color: var(--color-bg);
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 @layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 200ms ease-out;
+  .animate-fade-in { animation: fadeIn 300ms ease-out; }
+  .animate-slide-up { animation: slideUp 300ms ease-out; }
+  .animate-scale-in { animation: scaleIn 400ms ease-out; }
+  .animate-check-draw { animation: checkDraw 600ms ease-out; }
+  .animate-pulse-soft { animation: pulseSoft 1.5s ease-in-out infinite; }
+  .animate-toast-enter { animation: toastEnter 300ms ease-out; }
+  .animate-float { animation: float 3s ease-in-out infinite; }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #c9a96e 0%, #e8c97a 50%, #c9a96e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-  .animate-slide-up {
-    animation: slideUp 200ms ease-out;
+  .bg-gradient-hero {
+    background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 50%, #1e1e2e 100%);
   }
-  .animate-scale-in {
-    animation: scaleIn 300ms ease-out;
-  }
-  .animate-check-draw {
-    animation: checkDraw 600ms ease-out;
-  }
-  .animate-pulse-soft {
-    animation: pulseSoft 1.5s ease-in-out infinite;
-  }
-  .animate-toast-enter {
-    animation: toastEnter 300ms ease-out;
+  .bg-gradient-gold {
+    background: linear-gradient(135deg, #c9a96e 0%, #e8c97a 100%);
   }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-@keyframes checkDraw {
-  0% { transform: scale(0); opacity: 0; }
-  50% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
-}
-@keyframes pulseSoft {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-@keyframes toastEnter {
-  from { opacity: 0; transform: translateY(-16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes checkDraw { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes pulseSoft { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+@keyframes toastEnter { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
