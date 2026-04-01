@@ -50,7 +50,7 @@ export default function RegisterPage() {
             )}
             <Input label="Full Name" name="name" value={form.name} onChange={handleChange} error={errors.name} placeholder="Enter your name" required />
             <Input label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} placeholder="your@email.com" required />
-            <Input label="Phone (optional)" name="phone" type="tel" value={form.phone} onChange={handleChange} error={errors.phone} placeholder="07X XXX XXXX" />
+            <Input label="Mobile Number" name="phone" type="tel" value={form.phone} onChange={handleChange} error={errors.phone} placeholder="07X XXX XXXX" required />
             <Input label="Password" name="password" type="password" value={form.password} onChange={handleChange} error={errors.password} placeholder="Min 6 characters" required />
             <Button type="submit" isLoading={isSubmitting} className="w-full mt-2">
               {isSubmitting ? 'Creating account...' : 'Create Account'}

@@ -13,6 +13,7 @@ import ManageCategoriesPage from './pages/admin/ManageCategoriesPage.jsx';
 import ManageServicesPage from './pages/admin/ManageServicesPage.jsx';
 import OperatingHoursPage from './pages/admin/OperatingHoursPage.jsx';
 import ManageBookingsPage from './pages/admin/ManageBookingsPage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/book/:serviceId" element={<ProtectedRoute><BookingPage /></ProtectedRoute>} />
               <Route path="/my-bookings" element={<ProtectedRoute><MyBookingsPage /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute adminOnly><DashboardPage /></ProtectedRoute>} />
               <Route path="/admin/categories" element={<ProtectedRoute adminOnly><ManageCategoriesPage /></ProtectedRoute>} />
               <Route path="/admin/services" element={<ProtectedRoute adminOnly><ManageServicesPage /></ProtectedRoute>} />

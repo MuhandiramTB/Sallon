@@ -4,7 +4,7 @@ import { hashPassword, comparePassword } from '../utils/passwordUtils.js';
 import { signToken } from '../utils/tokenUtils.js';
 import { validate } from '../middleware/validate.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
-import { registerSchema, loginSchema } from '../validators/authSchemas.js';
+import { registerSchema, loginSchema, updateProfileSchema, changePasswordSchema } from '../validators/authSchemas.js';
 
 const router = Router();
 
@@ -82,6 +82,37 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
 // GET /api/v1/auth/me
 router.get('/me', authMiddleware, (req, res) => {
   res.json({ data: req.user });
+});
+
+// PUT /api/v1/auth/profile — update name/phone
+router.put('/profile', authMiddleware, validate(updateProfileSchema), (req, res) => {
+  const { name, phone } = req.validatedBody;
+  db.prepare(
+    'UPDATE users SET name = COALESCE(?, name), phone = COALESCE(?, phone) WHERE id = ?'
+  ).run(name ?? null, phone ?? null, req.user.id);
+
+  const user = db.prepare('SELECT id, name, email, phone, role FROM users WHERE id = ?').get(req.user.id);
+  res.json({ data: user });
+});
+
+// PUT /api/v1/auth/password — change password
+router.put('/password', authMiddleware, validate(changePasswordSchema), async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.validatedBody;
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+
+    const valid = await comparePassword(currentPassword, user.password_hash);
+    if (!valid) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    const newHash = await hashPassword(newPassword);
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newHash, req.user.id);
+
+    res.json({ data: { message: 'Password changed successfully' } });
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;

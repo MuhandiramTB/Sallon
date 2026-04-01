@@ -16,6 +16,8 @@ export const createServiceSchema = z.object({
   description: z.string().optional(),
   durationMinutes: z.number().int().min(5, 'Duration must be at least 5 minutes'),
   price: z.number().int().min(0, 'Price must be non-negative'),
+  isPackage: z.boolean().optional().default(false),
+  packageServiceIds: z.array(z.number().int().positive()).optional(),
 });
 
 export const updateServiceSchema = z.object({
@@ -25,4 +27,6 @@ export const updateServiceSchema = z.object({
   durationMinutes: z.number().int().min(5).optional(),
   price: z.number().int().min(0).optional(),
   isActive: z.boolean().optional(),
+  isPackage: z.boolean().optional(),
+  packageServiceIds: z.array(z.number().int().positive()).optional(),
 });

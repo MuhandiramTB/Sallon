@@ -1,7 +1,4 @@
--- Add package support to services
-ALTER TABLE services ADD COLUMN is_package INTEGER NOT NULL DEFAULT 0;
-
--- Package items junction table
+-- Package items junction table (is_package column already in 001-init.sql)
 CREATE TABLE IF NOT EXISTS package_items (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   package_id INTEGER NOT NULL,

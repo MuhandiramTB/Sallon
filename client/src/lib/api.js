@@ -21,10 +21,15 @@ export async function api(endpoint, options = {}) {
     config.body = JSON.stringify(options.body);
   }
 
-  const res = await fetch(`/api/v1${endpoint}`, config);
+  let res;
+  try {
+    res = await fetch(`/api/v1${endpoint}`, config);
+  } catch (err) {
+    throw new ApiError('Server is not responding. Please try again.', 0);
+  }
 
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'Network error' }));
+    const err = await res.json().catch(() => ({ error: 'Something went wrong' }));
     throw new ApiError(err.error || 'Request failed', res.status, err.details);
   }
 

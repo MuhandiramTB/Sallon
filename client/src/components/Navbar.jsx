@@ -68,9 +68,13 @@ export default function Navbar() {
               )}
               {navLink('/my-bookings', 'Bookings')}
               <div className="flex items-center gap-2 ml-2 pl-2 border-l border-white/20">
-                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold">
+                <Link
+                  to="/profile"
+                  className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold hover:bg-white/30 transition-colors"
+                  title="My Profile"
+                >
                   {user.name.charAt(0).toUpperCase()}
-                </div>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="text-sm text-white/70 hover:text-white transition-colors min-h-[44px] flex items-center"

@@ -3,7 +3,8 @@ import db from '../db/database.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { adminMiddleware } from '../middleware/adminMiddleware.js';
 import { validate } from '../middleware/validate.js';
-import { updateBookingStatusSchema } from '../validators/bookingSchemas.js';
+import { updateBookingStatusSchema, adminCreateBookingSchema } from '../validators/bookingSchemas.js';
+import { hashPassword } from '../utils/passwordUtils.js';
 
 const router = Router();
 
