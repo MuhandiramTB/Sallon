@@ -66,7 +66,10 @@ export default function Navbar() {
                   </button>
                 </>
               )}
-              {navLink('/my-bookings', 'Bookings')}
+              {user.role === 'admin'
+                ? navLink('/admin/quick-booking', 'Quick Book')
+                : navLink('/my-bookings', 'Bookings')
+              }
               <div className="flex items-center gap-2 ml-2 pl-2 border-l border-white/20">
                 <Link
                   to="/profile"

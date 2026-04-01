@@ -7,9 +7,10 @@ import BookingStatusBadge from '../../components/BookingStatusBadge.jsx';
 import { SkeletonPage } from '../../ui/Skeleton.jsx';
 
 const NAV_ITEMS = [
+  { to: '/admin/quick-booking', icon: '📞', title: 'Quick Booking', desc: 'Book for walk-in / phone customer' },
+  { to: '/admin/bookings', icon: '📅', title: 'All Bookings', desc: 'View & manage all bookings' },
   { to: '/admin/categories', icon: '📁', title: 'Categories', desc: 'Manage service categories' },
   { to: '/admin/services', icon: '✂️', title: 'Services', desc: 'Manage salon services & pricing' },
-  { to: '/admin/bookings', icon: '📅', title: 'All Bookings', desc: 'View & manage all bookings' },
   { to: '/admin/operating-hours', icon: '🕐', title: 'Hours', desc: 'Set open/close per day' },
 ];
 

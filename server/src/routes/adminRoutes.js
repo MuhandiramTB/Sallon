@@ -36,6 +36,53 @@ router.get('/bookings', authMiddleware, adminMiddleware, (req, res) => {
   res.json({ data: bookings });
 });
 
+// POST /api/v1/admin/bookings — admin creates booking for a customer (walk-in / phone call)
+router.post('/bookings', authMiddleware, adminMiddleware, validate(adminCreateBookingSchema), async (req, res, next) => {
+  try {
+    const { customerName, customerPhone, serviceId, date, startTime, endTime, status } = req.validatedBody;
+
+    // Find or create customer by phone number
+    let customer = db.prepare('SELECT id FROM users WHERE phone = ?').get(customerPhone);
+    if (!customer) {
+      const passwordHash = await hashPassword(customerPhone); // temp password = phone
+      const result = db.prepare(
+        "INSERT INTO users (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, 'customer')"
+      ).run(customerName, `${customerPhone}@walkin.local`, customerPhone, passwordHash);
+      customer = { id: result.lastInsertRowid };
+    }
+
+    // Check service exists
+    const service = db.prepare('SELECT * FROM services WHERE id = ? AND is_active = 1').get(serviceId);
+    if (!service) return res.status(400).json({ error: 'Service not found or inactive' });
+
+    // Check for overlap
+    const overlap = db.prepare(`
+      SELECT id FROM bookings
+      WHERE booking_date = ? AND status != 'cancelled'
+        AND start_time < ? AND end_time > ?
+    `).get(date, endTime, startTime);
+    if (overlap) return res.status(409).json({ error: 'This slot is already booked' });
+
+    const result = db.prepare(
+      'INSERT INTO bookings (user_id, service_id, booking_date, start_time, end_time, status) VALUES (?, ?, ?, ?, ?, ?)'
+    ).run(customer.id, serviceId, date, startTime, endTime, status || 'confirmed');
+
+    const booking = db.prepare(`
+      SELECT b.id, b.booking_date as bookingDate, b.start_time as startTime, b.end_time as endTime,
+             b.status, s.name as serviceName, s.price,
+             u.name as customerName, u.phone as customerPhone
+      FROM bookings b
+      JOIN services s ON b.service_id = s.id
+      JOIN users u ON b.user_id = u.id
+      WHERE b.id = ?
+    `).get(result.lastInsertRowid);
+
+    res.status(201).json({ data: booking });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // PATCH /api/v1/admin/bookings/:id — admin (update status)
 router.patch('/bookings/:id', authMiddleware, adminMiddleware, validate(updateBookingStatusSchema), (req, res) => {
   const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(req.params.id);
