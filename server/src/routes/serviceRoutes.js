@@ -114,7 +114,14 @@ router.delete('/:id', authMiddleware, adminMiddleware, (req, res) => {
   const existing = db.prepare('SELECT * FROM services WHERE id = ?').get(id);
   if (!existing) return res.status(404).json({ error: 'Service not found' });
 
+  // Check if service has bookings
+  const bookings = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE service_id = ? AND status != 'cancelled'").get(id);
+  if (bookings.count > 0) {
+    return res.status(409).json({ error: `Cannot delete — this service has ${bookings.count} active booking(s). Deactivate it instead.` });
+  }
+
   db.prepare('DELETE FROM package_items WHERE package_id = ?').run(id);
+  db.prepare('DELETE FROM package_items WHERE service_id = ?').run(id);
   db.prepare('DELETE FROM services WHERE id = ?').run(id);
   res.json({ data: { message: 'Service deleted' } });
 });

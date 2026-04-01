@@ -20,11 +20,16 @@ export default function BookingPage() {
   const [success, setSuccess] = useState(null);
 
   useEffect(() => {
+    // Admin should use Quick Booking, not customer booking page
+    if (user?.role === 'admin') {
+      navigate(`/admin/quick-booking?service=${serviceId}`, { replace: true });
+      return;
+    }
     api(`/services/${serviceId}`)
       .then((res) => setService(res.data))
       .catch(() => setError('Service not found'))
       .finally(() => setIsLoading(false));
-  }, [serviceId]);
+  }, [serviceId, user, navigate]);
 
   const handleBook = async () => {
     if (!user) { navigate('/login'); return; }

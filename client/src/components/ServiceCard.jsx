@@ -1,9 +1,19 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 import Card from '../ui/Card.jsx';
 import Button from '../ui/Button.jsx';
 
 export default function ServiceCard({ service }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleBook = () => {
+    if (user?.role === 'admin') {
+      navigate(`/admin/quick-booking?service=${service.id}`);
+    } else {
+      navigate(`/book/${service.id}`);
+    }
+  };
 
   return (
     <Card className="flex flex-col justify-between animate-slide-up">
@@ -24,11 +34,8 @@ export default function ServiceCard({ service }) {
           </span>
         </div>
       </div>
-      <Button
-        className="mt-5 w-full"
-        onClick={() => navigate(`/book/${service.id}`)}
-      >
-        Book Now
+      <Button className="mt-5 w-full" onClick={handleBook}>
+        {user?.role === 'admin' ? 'Book for Customer' : 'Book Now'}
       </Button>
     </Card>
   );

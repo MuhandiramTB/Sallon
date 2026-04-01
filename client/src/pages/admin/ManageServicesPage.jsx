@@ -7,6 +7,7 @@ import Modal from '../../ui/Modal.jsx';
 import Card from '../../ui/Card.jsx';
 import EmptyState from '../../ui/EmptyState.jsx';
 import ConfirmModal from '../../ui/ConfirmModal.jsx';
+import Toast from '../../ui/Toast.jsx';
 import { SkeletonPage } from '../../ui/Skeleton.jsx';
 
 export default function ManageServicesPage() {
@@ -19,6 +20,7 @@ export default function ManageServicesPage() {
   const [error, setError] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [toast, setToast] = useState('');
 
   const loadData = async () => {
     try {
@@ -69,13 +71,13 @@ export default function ManageServicesPage() {
 
   const toggleActive = async (svc) => {
     try { await api(`/services/${svc.id}`, { method: 'PUT', body: { isActive: !svc.isActive } }); loadData(); }
-    catch (err) { alert(err.message); }
+    catch (err) { setToast(err.message); }
   };
 
   const handleDelete = async () => {
     setIsDeleting(true);
     try { await api(`/services/${deleteTarget.id}`, { method: 'DELETE' }); setDeleteTarget(null); loadData(); }
-    catch (err) { setDeleteTarget(null); alert(err.message); }
+    catch (err) { setDeleteTarget(null); setToast(err.message); }
     finally { setIsDeleting(false); }
   };
 
@@ -202,6 +204,8 @@ export default function ManageServicesPage() {
         cancelLabel="Keep It"
         variant="danger"
       />
+
+      {toast && <Toast message={toast} type="error" onClose={() => setToast('')} />}
     </div>
   );
 }

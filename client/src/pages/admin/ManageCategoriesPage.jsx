@@ -6,6 +6,7 @@ import Modal from '../../ui/Modal.jsx';
 import Card from '../../ui/Card.jsx';
 import EmptyState from '../../ui/EmptyState.jsx';
 import ConfirmModal from '../../ui/ConfirmModal.jsx';
+import Toast from '../../ui/Toast.jsx';
 import { SkeletonPage } from '../../ui/Skeleton.jsx';
 
 export default function ManageCategoriesPage() {
@@ -17,6 +18,7 @@ export default function ManageCategoriesPage() {
   const [error, setError] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [toast, setToast] = useState('');
 
   const loadCategories = async () => {
     try { const res = await api('/categories'); setCategories(res.data); }
@@ -48,7 +50,7 @@ export default function ManageCategoriesPage() {
       loadCategories();
     } catch (err) {
       setDeleteTarget(null);
-      alert(err.message);
+      setToast(err.message);
     } finally { setIsDeleting(false); }
   };
 
@@ -100,6 +102,8 @@ export default function ManageCategoriesPage() {
         cancelLabel="Keep It"
         variant="danger"
       />
+
+      {toast && <Toast message={toast} type="error" onClose={() => setToast('')} />}
     </div>
   );
 }

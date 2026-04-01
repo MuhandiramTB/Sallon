@@ -3,102 +3,221 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../lib/api.js';
 
+// SVG Icons as components
+const icons = {
+  services: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+  ),
+  dashboard: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+  ),
+  quickBook: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+  ),
+  bookings: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+  ),
+  categories: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" /></svg>
+  ),
+  manageServices: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+  ),
+  hours: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+  ),
+  myBookings: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+  ),
+  profile: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+  ),
+  logout: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+  ),
+};
+
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [branding, setBranding] = useState({ salonName: 'Sallon', logoUrl: '' });
-  const [copied, setCopied] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     api('/config/branding').then((res) => setBranding(res.data)).catch(() => {});
   }, []);
 
+  useEffect(() => { setMobileMenuOpen(false); }, [location.pathname]);
+
   const handleLogout = () => { logout(); navigate('/login'); };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.origin);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const isActive = (path) => {
+    if (path === '/admin') return location.pathname === '/admin';
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
-  const isActive = (path) => location.pathname === path;
-
-  const navLink = (to, label) => (
+  const navLink = (to, label, icon) => (
     <Link
       to={to}
-      className={`text-sm font-medium min-h-[44px] flex items-center px-2 transition-colors ${
-        isActive(to) ? 'text-white border-b-2 border-white' : 'text-white/70 hover:text-white'
+      className={`text-sm font-medium min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ${
+        isActive(to)
+          ? 'bg-white/20 text-white'
+          : 'text-white/70 hover:text-white hover:bg-white/10'
       }`}
     >
-      {label}
+      {icon}
+      <span className="hidden sm:inline">{label}</span>
     </Link>
   );
 
+  const adminLinks = [
+    { to: '/admin', label: 'Dashboard', icon: icons.dashboard },
+    { to: '/admin/quick-booking', label: 'Quick Book', icon: icons.quickBook },
+    { to: '/admin/bookings', label: 'Bookings', icon: icons.bookings },
+    { to: '/admin/categories', label: 'Categories', icon: icons.categories },
+    { to: '/admin/services', label: 'Services', icon: icons.manageServices },
+    { to: '/admin/operating-hours', label: 'Hours', icon: icons.hours },
+  ];
+
+  const customerLinks = [
+    { to: '/services', label: 'Services', icon: icons.services },
+    { to: '/my-bookings', label: 'My Bookings', icon: icons.myBookings },
+  ];
+
+  const links = user?.role === 'admin' ? adminLinks : customerLinks;
+
   return (
-    <header className="bg-primary text-white shadow-lg sticky top-0 z-40">
-      <div className="container mx-auto px-4 py-2.5 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
-          {branding.logoUrl && <img src={branding.logoUrl} alt="" className="w-9 h-9 rounded-lg object-cover" />}
-          <span className="text-xl font-bold tracking-tight">{branding.salonName}</span>
-        </Link>
+    <>
+      <header className="bg-primary text-white shadow-lg sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-2.5 flex items-center justify-between">
+          {/* Logo */}
+          <Link to={user?.role === 'admin' ? '/admin' : '/'} className="flex items-center gap-2.5 hover:opacity-90 transition-opacity flex-shrink-0">
+            {branding.logoUrl && <img src={branding.logoUrl} alt="" className="w-9 h-9 rounded-lg object-cover" />}
+            <span className="text-xl font-bold tracking-tight">{branding.salonName}</span>
+          </Link>
 
-        <nav className="flex items-center gap-1">
-          {navLink('/services', 'Services')}
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {links.map((link) => navLink(link.to, link.label, link.icon))}
 
-          {user ? (
-            <>
-              {user.role === 'admin' && (
-                <>
-                  {navLink('/admin', 'Dashboard')}
-                  <button
-                    onClick={handleCopyLink}
-                    className="text-sm font-medium text-white/70 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-all min-h-[44px] flex items-center gap-1.5 ml-1"
-                  >
-                    {copied ? (
-                      <><span className="text-success-light">Copied!</span></>
-                    ) : (
-                      <>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                        Share
-                      </>
-                    )}
-                  </button>
-                </>
-              )}
-              {user.role === 'admin'
-                ? navLink('/admin/quick-booking', 'Quick Book')
-                : navLink('/my-bookings', 'Bookings')
-              }
-              <div className="flex items-center gap-2 ml-2 pl-2 border-l border-white/20">
+            {user ? (
+              <div className="flex items-center gap-1 ml-2 pl-2 border-l border-white/20">
                 <Link
                   to="/profile"
-                  className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold hover:bg-white/30 transition-colors"
-                  title="My Profile"
+                  className={`flex items-center gap-1.5 text-sm font-medium min-h-[44px] px-3 py-2 rounded-lg transition-all ${
+                    isActive('/profile') ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
                 >
-                  {user.name.charAt(0).toUpperCase()}
+                  <div className="w-6 h-6 rounded-full bg-white/25 flex items-center justify-center text-xs font-bold">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="hidden lg:inline">{user.name.split(' ')[0]}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-sm text-white/70 hover:text-white transition-colors min-h-[44px] flex items-center"
+                  className="text-sm text-white/70 hover:text-white hover:bg-white/10 min-h-[44px] flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all"
+                  title="Logout"
                 >
-                  Logout
+                  {icons.logout}
+                  <span className="hidden lg:inline">Logout</span>
                 </button>
               </div>
-            </>
-          ) : (
-            <div className="flex items-center gap-2 ml-2">
-              {navLink('/login', 'Login')}
-              <Link
-                to="/register"
-                className="text-sm font-medium bg-white text-primary px-4 py-2 rounded-lg hover:bg-white/90 transition-all min-h-[44px] flex items-center active:scale-[0.97]"
-              >
-                Register
-              </Link>
-            </div>
-          )}
-        </nav>
-      </div>
-    </header>
+            ) : (
+              <div className="flex items-center gap-2 ml-2">
+                {navLink('/login', 'Login', icons.profile)}
+                <Link
+                  to="/register"
+                  className="text-sm font-medium bg-white text-primary px-4 py-2 rounded-lg hover:bg-white/90 transition-all min-h-[44px] flex items-center active:scale-[0.97]"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden text-white min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+            aria-label="Menu"
+          >
+            {mobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+            )}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 top-[57px] z-30 animate-fade-in">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileMenuOpen(false)} />
+          <div className="relative bg-primary shadow-xl animate-slide-up">
+            <nav className="container mx-auto px-4 py-3 flex flex-col gap-1">
+              {links.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all min-h-[48px] ${
+                    isActive(link.to) ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'
+                  }`}
+                >
+                  {link.icon}
+                  {link.label}
+                </Link>
+              ))}
+
+              <div className="border-t border-white/20 mt-2 pt-2">
+                {user ? (
+                  <>
+                    <Link
+                      to="/profile"
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all min-h-[48px] ${
+                        isActive('/profile') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'
+                      }`}
+                    >
+                      <div className="w-7 h-7 rounded-full bg-white/25 flex items-center justify-center text-xs font-bold">
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                      My Profile
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 transition-all min-h-[48px]"
+                    >
+                      {icons.logout}
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 min-h-[48px]">
+                      {icons.profile} Login
+                    </Link>
+                    <Link to="/register" className="flex items-center justify-center gap-2 mx-4 mt-2 py-3 rounded-xl text-sm font-bold bg-white text-primary min-h-[48px]">
+                      Register
+                    </Link>
+                  </>
+                )}
+              </div>
+            </nav>
+          </div>
+        </div>
+      )}
+
+      {/* Guest: show Services link if not logged in (simple top bar for non-admin non-logged users) */}
+      {!user && (
+        <div className="md:hidden bg-primary/5 border-b border-border">
+          <div className="container mx-auto px-4 py-1 flex gap-2">
+            <Link to="/services" className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${isActive('/services') ? 'bg-primary text-white' : 'text-text-secondary hover:text-primary'}`}>
+              Services
+            </Link>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

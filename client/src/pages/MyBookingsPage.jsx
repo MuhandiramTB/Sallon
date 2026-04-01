@@ -4,6 +4,7 @@ import { api } from '../lib/api.js';
 import BookingCard from '../components/BookingCard.jsx';
 import EmptyState from '../ui/EmptyState.jsx';
 import ConfirmModal from '../ui/ConfirmModal.jsx';
+import Toast from '../ui/Toast.jsx';
 import { SkeletonPage } from '../ui/Skeleton.jsx';
 
 export default function MyBookingsPage() {
@@ -11,6 +12,7 @@ export default function MyBookingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [toast, setToast] = useState('');
   const navigate = useNavigate();
 
   const loadBookings = async () => {
@@ -27,7 +29,8 @@ export default function MyBookingsPage() {
       setCancelTarget(null);
       loadBookings();
     } catch (err) {
-      alert(err.message);
+      setCancelTarget(null);
+      setToast(err.message);
     } finally {
       setIsCancelling(false);
     }
@@ -59,6 +62,8 @@ export default function MyBookingsPage() {
         cancelLabel="Keep Booking"
         variant="danger"
       />
+
+      {toast && <Toast message={toast} type="error" onClose={() => setToast('')} />}
     </div>
   );
 }

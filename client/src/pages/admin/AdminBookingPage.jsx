@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api.js';
 import { formatTime, getNextDays } from '../../lib/formatDate.js';
 import Input from '../../ui/Input.jsx';
@@ -10,6 +10,8 @@ import Spinner from '../../ui/Spinner.jsx';
 
 export default function AdminBookingPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const preSelectedService = searchParams.get('service') || '';
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,7 +19,7 @@ export default function AdminBookingPage() {
   const [success, setSuccess] = useState(null);
 
   const [form, setForm] = useState({ customerName: '', customerPhone: '' });
-  const [selectedServiceId, setSelectedServiceId] = useState('');
+  const [selectedServiceId, setSelectedServiceId] = useState(preSelectedService);
   const [selectedDate, setSelectedDate] = useState(null);
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);

@@ -6,6 +6,7 @@ import Button from '../../ui/Button.jsx';
 import Card from '../../ui/Card.jsx';
 import EmptyState from '../../ui/EmptyState.jsx';
 import ConfirmModal from '../../ui/ConfirmModal.jsx';
+import Toast from '../../ui/Toast.jsx';
 import Spinner from '../../ui/Spinner.jsx';
 
 const STATUS_ACTIONS = {
@@ -20,8 +21,9 @@ export default function ManageBookingsPage() {
   const [filterDate, setFilterDate] = useState(getTodayDate());
   const [filterStatus, setFilterStatus] = useState('');
   const [isDailyView, setIsDailyView] = useState(false);
-  const [actionTarget, setActionTarget] = useState(null); // { bookingId, action }
+  const [actionTarget, setActionTarget] = useState(null);
   const [isActioning, setIsActioning] = useState(false);
+  const [toast, setToast] = useState('');
 
   const loadBookings = async () => {
     setIsLoading(true);
@@ -46,7 +48,7 @@ export default function ManageBookingsPage() {
       loadBookings();
     } catch (err) {
       setActionTarget(null);
-      alert(err.message);
+      setToast(err.message);
     } finally { setIsActioning(false); }
   };
 
@@ -159,6 +161,8 @@ export default function ManageBookingsPage() {
         cancelLabel="Go Back"
         variant={actionConfig.variant || 'warning'}
       />
+
+      {toast && <Toast message={toast} type="error" onClose={() => setToast('')} />}
     </div>
   );
 }
