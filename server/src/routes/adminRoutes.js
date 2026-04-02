@@ -8,6 +8,31 @@ import { hashPassword } from '../utils/passwordUtils.js';
 
 const router = Router();
 
+// GET /api/v1/admin/stats — admin database overview
+router.get('/stats', authMiddleware, adminMiddleware, (req, res) => {
+  const users = db.prepare("SELECT COUNT(*) as count FROM users WHERE role = 'customer'").get().count;
+  const services = db.prepare('SELECT COUNT(*) as count FROM services WHERE is_active = 1').get().count;
+  const categories = db.prepare('SELECT COUNT(*) as count FROM categories WHERE is_active = 1').get().count;
+  const totalBookings = db.prepare('SELECT COUNT(*) as count FROM bookings').get().count;
+  const pendingBookings = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status = 'pending'").get().count;
+  const confirmedBookings = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status = 'confirmed'").get().count;
+  const completedBookings = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status = 'completed'").get().count;
+
+  res.json({
+    data: {
+      customers: users,
+      categories,
+      services,
+      bookings: {
+        total: totalBookings,
+        pending: pendingBookings,
+        confirmed: confirmedBookings,
+        completed: completedBookings,
+      },
+    },
+  });
+});
+
 // GET /api/v1/admin/bookings — admin (with filters)
 router.get('/bookings', authMiddleware, adminMiddleware, (req, res) => {
   const { date, status, category_id } = req.query;
