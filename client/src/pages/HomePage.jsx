@@ -37,7 +37,7 @@ export default function HomePage() {
             Welcome to<br />
             <span className="text-gradient">{branding.salonName}</span>
           </h1>
-          <p className="text-base sm:text-lg text-white/50 mb-8 max-w-md mx-auto animate-slide-up">
+          <p className="text-base sm:text-lg text-white/70 mb-8 max-w-md mx-auto animate-slide-up">
             Your premium grooming experience. Book your appointment in seconds.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center animate-slide-up">
@@ -58,7 +58,7 @@ export default function HomePage() {
                 <span className="text-accent font-bold text-sm">{step.num}</span>
               </div>
               <h3 className="font-medium text-white/80 text-sm">{step.title}</h3>
-              <p className="text-xs text-white/40 mt-0.5 hidden sm:block">{step.desc}</p>
+              <p className="text-xs text-white/60 mt-0.5 hidden sm:block">{step.desc}</p>
             </div>
           ))}
         </div>

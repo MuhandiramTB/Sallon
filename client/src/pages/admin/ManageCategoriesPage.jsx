@@ -59,23 +59,29 @@ export default function ManageCategoriesPage() {
   return (
     <div className="py-6 animate-fade-in">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-text-primary">Manage Categories</h1>
+        <h1 className="text-2xl font-bold text-white">Manage Categories</h1>
         <Button onClick={openCreate}>+ Add Category</Button>
       </div>
 
       {categories.length === 0 ? (
         <EmptyState icon="📁" title="No categories yet" description="Create your first category to organize services." actionLabel="Create Category" onAction={openCreate} />
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((cat) => (
-            <Card key={cat.id} className="flex items-center justify-between py-4">
-              <div>
-                <span className="font-medium text-text-primary">{cat.name}</span>
-                <span className="text-text-muted text-sm ml-3">Order: {cat.displayOrder}</span>
+            <Card key={cat.id} className="py-4">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="font-semibold text-white text-lg">{cat.name}</h3>
+                  <span className="text-white/60 text-sm">Order: {cat.displayOrder}</span>
+                </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" onClick={() => openEdit(cat)} className="text-sm">Edit</Button>
-                <Button variant="ghost" onClick={() => setDeleteTarget(cat)} className="text-sm text-error hover:text-error">Delete</Button>
+                <button onClick={() => openEdit(cat)} className="text-xs font-medium bg-blue-500/20 text-blue-400 px-3 py-2 rounded-lg hover:bg-blue-500/30 min-h-[36px] transition-colors">
+                  Edit
+                </button>
+                <button onClick={() => setDeleteTarget(cat)} className="text-xs font-medium bg-red-500/20 text-red-400 px-3 py-2 rounded-lg hover:bg-red-500/30 min-h-[36px] transition-colors">
+                  Delete
+                </button>
               </div>
             </Card>
           ))}
@@ -84,7 +90,7 @@ export default function ManageCategoriesPage() {
 
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editingCategory ? 'Edit Category' : 'New Category'}>
         <form onSubmit={handleSubmit}>
-          {error && <div className="bg-red-50 text-error p-3 rounded-lg mb-4 text-sm">{error}</div>}
+          {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg mb-4 text-sm">{error}</div>}
           <Input label="Category Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Boys, Ladies, Spa" required />
           <Input label="Display Order" type="number" value={form.displayOrder} onChange={(e) => setForm({ ...form, displayOrder: parseInt(e.target.value) || 0 })} />
           <Button type="submit" className="w-full">{editingCategory ? 'Update Category' : 'Create Category'}</Button>

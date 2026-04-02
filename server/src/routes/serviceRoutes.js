@@ -52,9 +52,10 @@ router.post('/', authMiddleware, adminMiddleware, validate(createServiceSchema),
   const category = db.prepare('SELECT id FROM categories WHERE id = ?').get(categoryId);
   if (!category) return res.status(400).json({ error: 'Category not found' });
 
+  const cleanDesc = (description && description.trim() && description.trim() !== '0') ? description.trim() : null;
   const result = db.prepare(
     'INSERT INTO services (category_id, name, description, duration_minutes, price, is_package) VALUES (?, ?, ?, ?, ?, ?)'
-  ).run(categoryId, name, description || null, durationMinutes, price, isPackage ? 1 : 0);
+  ).run(categoryId, name, cleanDesc, durationMinutes, price, isPackage ? 1 : 0);
 
   // Add package items if this is a package
   if (isPackage && packageServiceIds?.length) {

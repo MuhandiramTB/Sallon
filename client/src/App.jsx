@@ -23,9 +23,9 @@ function Layout() {
   const isFullBleed = FULL_BLEED.includes(location.pathname);
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg-dark">
       <Navbar />
-      <div className={isFullBleed ? '' : 'container mx-auto p-4'}>
+      <div className={isFullBleed ? '' : 'container mx-auto p-4 pb-8'}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />

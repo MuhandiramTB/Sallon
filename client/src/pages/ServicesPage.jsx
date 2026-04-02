@@ -38,7 +38,7 @@ export default function ServicesPage() {
 
   return (
     <div className="py-6 animate-fade-in">
-      <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-6">Our Services</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">Our Services</h1>
       <CategoryList categories={categories} selectedId={selectedCategory} onSelect={handleCategorySelect} />
       {filtered.length === 0 ? (
         <EmptyState

@@ -31,17 +31,17 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 animate-fade-in">
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-surface rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center animate-scale-in">
+      <div className="relative bg-[#2a2a3d] rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center animate-scale-in">
         {icons[variant]}
 
-        <h3 className="text-xl font-bold text-text-primary mb-2">{title}</h3>
-        <p className="text-text-secondary text-sm mb-8 leading-relaxed">{message}</p>
+        <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+        <p className="text-white/60 text-sm mb-8 leading-relaxed">{message}</p>
 
         <div className="flex gap-3">
           <Button
             variant="ghost"
             onClick={onClose}
-            className="flex-1 border border-border hover:bg-gray-50"
+            className="flex-1 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white"
             disabled={isLoading}
           >
             {cancelLabel}

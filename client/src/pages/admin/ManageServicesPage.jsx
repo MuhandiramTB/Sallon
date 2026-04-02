@@ -98,7 +98,7 @@ export default function ManageServicesPage() {
   return (
     <div className="py-6 animate-fade-in">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-text-primary">Manage Services</h1>
+        <h1 className="text-2xl font-bold text-white">Manage Services</h1>
         <div className="flex gap-2">
           <Button onClick={() => openCreate(false)} disabled={categories.length === 0}>+ Service</Button>
           <Button variant="secondary" onClick={() => openCreate(true)} disabled={regularServices.length === 0}>+ Package</Button>
@@ -106,43 +106,47 @@ export default function ManageServicesPage() {
       </div>
 
       {categories.length === 0 && (
-        <Card className="bg-amber-50 border border-amber-200 mb-4">
-          <p className="text-amber-700 text-sm font-medium">Create categories first before adding services.</p>
+        <Card className="bg-amber-500/10 border border-amber-500/20 mb-4">
+          <p className="text-amber-400 text-sm font-medium">Create categories first before adding services.</p>
         </Card>
       )}
 
       {services.length === 0 ? (
         <EmptyState icon="✂️" title="No services yet" description="Add your salon services with pricing." actionLabel="Add Service" onAction={() => openCreate(false)} />
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {services.map((svc) => (
             <Card key={svc.id} className={`transition-opacity ${!svc.isActive ? 'opacity-50' : ''}`}>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex flex-col gap-3">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <h3 className="font-semibold text-text-primary">{svc.name}</h3>
-                    <span className="text-xs text-primary bg-primary-light px-2 py-0.5 rounded-full">{svc.categoryName}</span>
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <h3 className="font-semibold text-white">{svc.name}</h3>
+                    <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full">{svc.categoryName}</span>
                     {svc.isPackage ? (
-                      <span className="text-xs font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full">Package</span>
+                      <span className="text-xs font-semibold text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-full">Package</span>
                     ) : null}
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-text-secondary">
-                    <span className="font-bold text-primary">Rs. {svc.price}</span>
-                    <span>{svc.durationMinutes} min</span>
+                  <div className="flex items-center gap-3 text-sm mb-2">
+                    <span className="font-bold text-accent">Rs. {svc.price}</span>
+                    <span className="text-white/70">{svc.durationMinutes} min</span>
                   </div>
                   {svc.isPackage && svc.packageItems?.length > 0 && (
-                    <p className="text-xs text-text-muted mt-1">
+                    <p className="text-xs text-white/60 mb-2">
                       Includes: {svc.packageItems.map((i) => i.name).join(' + ')}
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <button onClick={() => toggleActive(svc)}
-                    className={`text-xs font-medium px-3 py-1.5 rounded-full min-h-[36px] transition-colors ${svc.isActive ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+                    className={`text-xs font-medium px-3 py-1.5 rounded-full min-h-[36px] transition-colors ${svc.isActive ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' : 'bg-white/5 text-white/40 hover:bg-white/10'}`}>
                     {svc.isActive ? 'Active' : 'Inactive'}
                   </button>
-                  <Button variant="ghost" onClick={() => openEdit(svc)} className="text-sm">Edit</Button>
-                  <Button variant="ghost" onClick={() => setDeleteTarget(svc)} className="text-sm text-error hover:text-error">Delete</Button>
+                  <button onClick={() => openEdit(svc)} className="text-xs font-medium bg-blue-500/20 text-blue-400 px-3 py-1.5 rounded-lg hover:bg-blue-500/30 min-h-[36px] transition-colors">
+                    Edit
+                  </button>
+                  <button onClick={() => setDeleteTarget(svc)} className="text-xs font-medium bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/30 min-h-[36px] transition-colors">
+                    Delete
+                  </button>
                 </div>
               </div>
             </Card>
@@ -152,7 +156,7 @@ export default function ManageServicesPage() {
 
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editingService ? (form.isPackage ? 'Edit Package' : 'Edit Service') : (form.isPackage ? 'New Package' : 'New Service')}>
         <form onSubmit={handleSubmit}>
-          {error && <div className="bg-red-50 text-error p-3 rounded-lg mb-4 text-sm">{error}</div>}
+          {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg mb-4 text-sm">{error}</div>}
           <Select label="Category" value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} required>
             <option value="">Select category</option>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -162,23 +166,23 @@ export default function ManageServicesPage() {
 
           {form.isPackage && regularServices.length > 0 && (
             <div className="mb-4">
-              <label className="block text-sm font-medium text-text-primary mb-2">Select Services in Package</label>
-              <div className="space-y-2 max-h-40 overflow-y-auto border border-border rounded-lg p-3">
+              <label className="block text-sm font-medium text-white mb-2">Select Services in Package</label>
+              <div className="space-y-2 max-h-40 overflow-y-auto border border-white/10 rounded-lg p-3">
                 {regularServices.map((s) => (
                   <label key={s.id} className="flex items-center gap-2 cursor-pointer min-h-[36px]">
                     <input
                       type="checkbox"
                       checked={form.packageServiceIds.includes(s.id)}
                       onChange={() => togglePackageItem(s.id)}
-                      className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+                      className="w-4 h-4 rounded border-white/10 text-accent focus:ring-accent/50"
                     />
-                    <span className="text-sm">{s.name}</span>
-                    <span className="text-xs text-text-muted ml-auto">Rs. {s.price} / {s.durationMinutes}min</span>
+                    <span className="text-sm text-white/80">{s.name}</span>
+                    <span className="text-xs text-white/60 ml-auto">Rs. {s.price} / {s.durationMinutes}min</span>
                   </label>
                 ))}
               </div>
               {form.packageServiceIds.length > 0 && (
-                <p className="text-xs text-text-muted mt-1">
+                <p className="text-xs text-white/60 mt-1">
                   Total duration: {form.durationMinutes} min | Set your own package price below
                 </p>
               )}

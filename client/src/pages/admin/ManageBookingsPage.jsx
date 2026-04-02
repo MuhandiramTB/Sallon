@@ -57,7 +57,7 @@ export default function ManageBookingsPage() {
   return (
     <div className="py-6 animate-fade-in">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-text-primary">
+        <h1 className="text-2xl font-bold text-white">
           {isDailyView ? "Today's Schedule" : 'All Bookings'}
         </h1>
         <Button variant="secondary" onClick={() => setIsDailyView(!isDailyView)} className="text-sm">
@@ -68,10 +68,10 @@ export default function ManageBookingsPage() {
       <Card className="flex gap-3 mb-6 flex-wrap p-4">
         {isDailyView && (
           <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
-            className="border border-border rounded-lg px-3 py-2 min-h-[44px] text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary" />
+            className="border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[44px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [color-scheme:dark]" />
         )}
         <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
-          className="border border-border rounded-lg px-3 py-2 min-h-[44px] text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary">
+          className="border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[44px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [&>option]:bg-[#2a2a3d] [&>option]:text-white">
           <option value="">All Statuses</option>
           <option value="pending">Pending</option>
           <option value="confirmed">Confirmed</option>
@@ -85,65 +85,60 @@ export default function ManageBookingsPage() {
       ) : bookings.length === 0 ? (
         <EmptyState icon="📅" title="No bookings found" description="No bookings match your current filters." />
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {bookings.map((b) => (
             <Card key={b.id} className="py-4">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                <div className="flex items-center gap-3 min-w-[80px]">
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-primary">{formatTime(b.startTime)}</div>
-                    <div className="text-xs text-text-muted">{formatDate(b.bookingDate)}</div>
-                  </div>
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="text-lg font-bold text-accent">{formatTime(b.startTime)}</div>
+                  <div className="text-xs text-white/60">{formatDate(b.bookingDate)}</div>
                 </div>
-                <div className="w-px h-10 bg-border hidden sm:block" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-sm">{b.customerName}</span>
-                    <BookingStatusBadge status={b.status} />
-                  </div>
-                  <div className="text-sm text-text-secondary">{b.serviceName} &middot; Rs. {b.price}</div>
-                  {b.customerPhone ? (
-                    <a
-                      href={`tel:${b.customerPhone}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigator.clipboard.writeText(b.customerPhone);
-                        const el = e.currentTarget;
-                        const original = el.innerHTML;
-                        el.textContent = 'Copied!';
-                        setTimeout(() => { el.innerHTML = original; }, 1500);
-                        window.open(`tel:${b.customerPhone}`);
-                      }}
-                      className="text-xs text-primary font-medium hover:underline cursor-pointer flex items-center gap-1 mt-0.5"
-                      title="Tap to call / copy number"
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                      {b.customerPhone}
-                    </a>
-                  ) : (
-                    <div className="text-xs text-text-muted">{b.customerEmail}</div>
-                  )}
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  {b.status === 'pending' && (
-                    <button onClick={() => setActionTarget({ bookingId: b.id, action: 'confirm' })}
-                      className="text-xs font-medium bg-green-50 text-green-700 px-3 py-2 rounded-lg hover:bg-green-100 min-h-[40px] transition-colors">
-                      Confirm
-                    </button>
-                  )}
-                  {b.status === 'confirmed' && (
-                    <button onClick={() => setActionTarget({ bookingId: b.id, action: 'complete' })}
-                      className="text-xs font-medium bg-blue-50 text-blue-700 px-3 py-2 rounded-lg hover:bg-blue-100 min-h-[40px] transition-colors">
-                      Complete
-                    </button>
-                  )}
-                  {b.status !== 'cancelled' && b.status !== 'completed' && (
-                    <button onClick={() => setActionTarget({ bookingId: b.id, action: 'cancel' })}
-                      className="text-xs font-medium bg-red-50 text-red-700 px-3 py-2 rounded-lg hover:bg-red-100 min-h-[40px] transition-colors">
-                      Cancel
-                    </button>
-                  )}
-                </div>
+                <BookingStatusBadge status={b.status} />
+              </div>
+              <div className="space-y-1.5">
+                <div className="font-medium text-white">{b.customerName}</div>
+                <div className="text-sm text-white/80">{b.serviceName} &middot; Rs. {b.price}</div>
+                {b.customerPhone ? (
+                  <a
+                    href={`tel:${b.customerPhone}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigator.clipboard.writeText(b.customerPhone);
+                      const el = e.currentTarget;
+                      const original = el.innerHTML;
+                      el.textContent = 'Copied!';
+                      setTimeout(() => { el.innerHTML = original; }, 1500);
+                      window.open(`tel:${b.customerPhone}`);
+                    }}
+                    className="text-xs text-accent font-medium hover:underline cursor-pointer flex items-center gap-1 mt-0.5"
+                    title="Tap to call / copy number"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                    {b.customerPhone}
+                  </a>
+                ) : (
+                  <div className="text-xs text-white/60">{b.customerEmail}</div>
+                )}
+              </div>
+              <div className="flex gap-2 flex-wrap mt-3 pt-3 border-t border-white/10">
+                {b.status === 'pending' && (
+                  <button onClick={() => setActionTarget({ bookingId: b.id, action: 'confirm' })}
+                    className="text-xs font-medium bg-green-500/20 text-green-400 px-3 py-2 rounded-lg hover:bg-green-500/30 min-h-[36px] transition-colors">
+                    Confirm
+                  </button>
+                )}
+                {b.status === 'confirmed' && (
+                  <button onClick={() => setActionTarget({ bookingId: b.id, action: 'complete' })}
+                    className="text-xs font-medium bg-blue-500/20 text-blue-400 px-3 py-2 rounded-lg hover:bg-blue-500/30 min-h-[36px] transition-colors">
+                    Complete
+                  </button>
+                )}
+                {b.status !== 'cancelled' && b.status !== 'completed' && (
+                  <button onClick={() => setActionTarget({ bookingId: b.id, action: 'cancel' })}
+                    className="text-xs font-medium bg-red-500/20 text-red-400 px-3 py-2 rounded-lg hover:bg-red-500/30 min-h-[36px] transition-colors">
+                    Cancel
+                  </button>
+                )}
               </div>
             </Card>
           ))}

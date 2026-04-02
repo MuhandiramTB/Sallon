@@ -50,7 +50,7 @@ export default function RegisterPage() {
             <span className="text-lg font-bold text-primary">S</span>
           </div>
           <h1 className="text-xl font-bold text-white">{branding.salonName}</h1>
-          <p className="text-white/40 text-xs mt-1">Create your account</p>
+          <p className="text-white/60 text-xs mt-1">Create your account</p>
         </div>
 
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
@@ -84,7 +84,7 @@ export default function RegisterPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-white/40 mt-4">
+        <p className="text-center text-xs text-white/60 mt-4">
           Already have an account?{' '}
           <Link to="/login" className="text-accent font-semibold hover:text-accent-hover">Sign in</Link>
         </p>

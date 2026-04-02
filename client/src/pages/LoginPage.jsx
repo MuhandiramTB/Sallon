@@ -50,7 +50,7 @@ export default function LoginPage() {
             <span className="text-2xl font-bold text-primary">S</span>
           </div>
           <h1 className="text-2xl font-bold text-white">{branding.salonName}</h1>
-          <p className="text-white/40 text-sm mt-1">Sign in to your account</p>
+          <p className="text-white/60 text-sm mt-1">Sign in to your account</p>
         </div>
 
         {/* Form card */}
@@ -88,7 +88,7 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-sm text-white/40 mt-6">
+        <p className="text-center text-sm text-white/60 mt-6">
           Don't have an account?{' '}
           <Link to="/register" className="text-accent font-semibold hover:text-accent-hover transition-colors">Create one</Link>
         </p>
