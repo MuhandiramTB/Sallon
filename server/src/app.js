@@ -16,7 +16,9 @@ import configRoutes from './routes/configRoutes.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
-app.use(cors({ origin: CORS_ORIGIN }));
+// In production, frontend is served from same server — no CORS needed
+const isProduction = process.env.NODE_ENV === 'production';
+app.use(cors(isProduction ? {} : { origin: CORS_ORIGIN }));
 app.use(express.json());
 
 // Health check
