@@ -35,6 +35,12 @@ const icons = {
   logout: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
   ),
+  contact: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+  ),
+  salonInfo: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+  ),
 };
 
 export default function Navbar() {
@@ -74,16 +80,17 @@ export default function Navbar() {
   const adminLinks = [
     { to: '/admin', label: 'Dashboard', icon: icons.dashboard },
     { to: '/admin/quick-booking', label: 'Quick Book', icon: icons.quickBook },
-    { to: '/services', label: 'My Services', icon: icons.services },
     { to: '/admin/bookings', label: 'Bookings', icon: icons.bookings },
     { to: '/admin/categories', label: 'Categories', icon: icons.categories },
-    { to: '/admin/services', label: 'Manage', icon: icons.manageServices },
+    { to: '/admin/services', label: 'Services', icon: icons.manageServices },
     { to: '/admin/operating-hours', label: 'Hours', icon: icons.hours },
+    { to: '/admin/salon-info', label: 'Salon Info', icon: icons.salonInfo },
   ];
 
   const customerLinks = [
     { to: '/services', label: 'Services', icon: icons.services },
     { to: '/my-bookings', label: 'My Bookings', icon: icons.myBookings },
+    { to: '/contact', label: 'Contact', icon: icons.contact },
   ];
 
   const links = user?.role === 'admin' ? adminLinks : customerLinks;

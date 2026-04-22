@@ -14,6 +14,7 @@ import slotRoutes from './routes/slotRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import configRoutes from './routes/configRoutes.js';
+import salonInfoRoutes from './routes/salonInfoRoutes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -121,6 +122,7 @@ app.use('/api/v1/slots', slotRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/config', configRoutes);
+app.use('/api/v1/salon-info', salonInfoRoutes);
 
 // On Vercel, frontend is served by Vercel CDN — skip static serving
 // On traditional hosts (Render/local), serve built React app

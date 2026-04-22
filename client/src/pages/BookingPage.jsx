@@ -7,6 +7,7 @@ import SlotPicker from '../components/SlotPicker.jsx';
 import Button from '../ui/Button.jsx';
 import Card from '../ui/Card.jsx';
 import Spinner from '../ui/Spinner.jsx';
+import ContactStrip from '../components/ContactStrip.jsx';
 
 export default function BookingPage() {
   const { serviceId } = useParams();
@@ -70,6 +71,9 @@ export default function BookingPage() {
             <div className="flex justify-between"><span className="text-white/60 text-sm">Time</span><span className="font-medium text-white text-sm">{formatTime(success.startTime)} - {formatTime(success.endTime)}</span></div>
             <div className="flex justify-between"><span className="text-white/60 text-sm">Price</span><span className="font-bold text-accent">Rs. {success.price}</span></div>
             <div className="flex justify-between"><span className="text-white/60 text-sm">Status</span><span className="text-amber-400 font-medium text-sm">Pending Confirmation</span></div>
+          </div>
+          <div className="mb-5">
+            <ContactStrip />
           </div>
           <div className="flex gap-3">
             <Button onClick={() => navigate('/my-bookings')} className="flex-1">My Bookings</Button>

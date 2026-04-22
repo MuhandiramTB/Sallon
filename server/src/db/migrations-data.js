@@ -101,6 +101,29 @@ END
 WHERE day_name IS NULL OR day_name = '';
 `
   },
+  {
+    name: '005-salon-info.sql',
+    sql: `
+CREATE TABLE IF NOT EXISTS salon_info (
+  id SERIAL PRIMARY KEY,
+  owner_name TEXT DEFAULT '',
+  phone TEXT DEFAULT '',
+  whatsapp TEXT DEFAULT '',
+  email TEXT DEFAULT '',
+  address TEXT DEFAULT '',
+  google_maps_url TEXT DEFAULT '',
+  facebook_url TEXT DEFAULT '',
+  instagram_url TEXT DEFAULT '',
+  booking_note TEXT DEFAULT '',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+INSERT INTO salon_info (id, owner_name, phone, whatsapp, email, address, booking_note)
+SELECT 1, 'Salon Owner', '+94 77 000 0000', '+94 77 000 0000', 'info@sallonart.lk',
+       '123 Main Street, Colombo', 'For any booking changes or cancellations, please WhatsApp or call us.'
+WHERE NOT EXISTS (SELECT 1 FROM salon_info WHERE id = 1);
+`
+  },
 ];
 
 export const SQLITE_MIGRATIONS = [
@@ -205,6 +228,28 @@ UPDATE operating_hours SET day_name = CASE day_of_week
   WHEN 5 THEN 'Friday'
   WHEN 6 THEN 'Saturday'
 END;
+`
+  },
+  {
+    name: '005-salon-info.sql',
+    sql: `
+CREATE TABLE IF NOT EXISTS salon_info (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  owner_name TEXT DEFAULT '',
+  phone TEXT DEFAULT '',
+  whatsapp TEXT DEFAULT '',
+  email TEXT DEFAULT '',
+  address TEXT DEFAULT '',
+  google_maps_url TEXT DEFAULT '',
+  facebook_url TEXT DEFAULT '',
+  instagram_url TEXT DEFAULT '',
+  booking_note TEXT DEFAULT '',
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+INSERT OR IGNORE INTO salon_info (id, owner_name, phone, whatsapp, email, address, booking_note)
+VALUES (1, 'Salon Owner', '+94 77 000 0000', '+94 77 000 0000', 'info@sallonart.lk',
+        '123 Main Street, Colombo', 'For any booking changes or cancellations, please WhatsApp or call us.');
 `
   },
 ];

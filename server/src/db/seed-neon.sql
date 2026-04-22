@@ -103,6 +103,28 @@ ON CONFLICT (day_of_week) DO UPDATE SET
   is_closed = EXCLUDED.is_closed;
 
 -- ============================================
+-- SALON INFO (contact details shown to customers)
+-- ============================================
+CREATE TABLE IF NOT EXISTS salon_info (
+  id SERIAL PRIMARY KEY,
+  owner_name TEXT DEFAULT '',
+  phone TEXT DEFAULT '',
+  whatsapp TEXT DEFAULT '',
+  email TEXT DEFAULT '',
+  address TEXT DEFAULT '',
+  google_maps_url TEXT DEFAULT '',
+  facebook_url TEXT DEFAULT '',
+  instagram_url TEXT DEFAULT '',
+  booking_note TEXT DEFAULT '',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+INSERT INTO salon_info (id, owner_name, phone, whatsapp, email, address, booking_note)
+VALUES (1, 'Salon Owner', '+94 77 000 0000', '+94 77 000 0000', 'info@sallonart.lk',
+        '123 Main Street, Colombo', 'For any booking changes or cancellations, please WhatsApp or call us.')
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================
 -- VERIFY — see the counts
 -- ============================================
 SELECT 'Categories:' as label, COUNT(*)::text as count FROM categories

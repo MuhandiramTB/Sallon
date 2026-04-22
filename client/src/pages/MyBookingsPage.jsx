@@ -8,6 +8,7 @@ import ConfirmModal from '../ui/ConfirmModal.jsx';
 import Button from '../ui/Button.jsx';
 import Toast from '../ui/Toast.jsx';
 import { SkeletonPage } from '../ui/Skeleton.jsx';
+import ContactStrip from '../components/ContactStrip.jsx';
 
 export default function MyBookingsPage() {
   const [bookings, setBookings] = useState([]);
@@ -82,6 +83,15 @@ export default function MyBookingsPage() {
                       <Button variant="danger" onClick={() => setCancelTarget(b)} className="w-full text-sm">
                         Cancel Booking
                       </Button>
+                    )}
+                    {b.status === 'confirmed' && (
+                      <div className="bg-accent/5 border border-accent/20 rounded-lg p-3">
+                        <div className="flex gap-2 text-xs text-white/70 mb-2">
+                          <svg className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          <span>Time cannot be changed after confirmation. For any issues, contact us:</span>
+                        </div>
+                        <ContactStrip compact />
+                      </div>
                     )}
                   </div>
                 ))}

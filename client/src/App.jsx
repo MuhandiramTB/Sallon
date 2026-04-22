@@ -19,6 +19,8 @@ import OperatingHoursPage from './pages/admin/OperatingHoursPage.jsx';
 import ManageBookingsPage from './pages/admin/ManageBookingsPage.jsx';
 import AdminBookingPage from './pages/admin/AdminBookingPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
+import ContactPage from './pages/ContactPage.jsx';
+import SalonInfoPage from './pages/admin/SalonInfoPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
 const FULL_BLEED = ['/', '/login', '/register'];
@@ -38,6 +40,7 @@ function Layout() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/services" element={<ServicesPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/book/:serviceId" element={<ProtectedRoute><BookingPage /></ProtectedRoute>} />
           <Route path="/my-bookings" element={<ProtectedRoute><MyBookingsPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
@@ -45,6 +48,7 @@ function Layout() {
           <Route path="/admin/categories" element={<ProtectedRoute adminOnly><ManageCategoriesPage /></ProtectedRoute>} />
           <Route path="/admin/services" element={<ProtectedRoute adminOnly><ManageServicesPage /></ProtectedRoute>} />
           <Route path="/admin/operating-hours" element={<ProtectedRoute adminOnly><OperatingHoursPage /></ProtectedRoute>} />
+          <Route path="/admin/salon-info" element={<ProtectedRoute adminOnly><SalonInfoPage /></ProtectedRoute>} />
           <Route path="/admin/bookings" element={<ProtectedRoute adminOnly><ManageBookingsPage /></ProtectedRoute>} />
           <Route path="/admin/quick-booking" element={<ProtectedRoute adminOnly><AdminBookingPage /></ProtectedRoute>} />
           {/* Catch-all 404 */}
