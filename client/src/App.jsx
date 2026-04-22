@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
+import ServerWakingOverlay from './components/ServerWakingOverlay.jsx';
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
@@ -15,8 +17,10 @@ import OperatingHoursPage from './pages/admin/OperatingHoursPage.jsx';
 import ManageBookingsPage from './pages/admin/ManageBookingsPage.jsx';
 import AdminBookingPage from './pages/admin/AdminBookingPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
 
 const FULL_BLEED = ['/', '/login', '/register'];
+const NO_NAVBAR = []; // Add paths here if we ever need to hide navbar
 
 function Layout() {
   const location = useLocation();
@@ -40,19 +44,24 @@ function Layout() {
           <Route path="/admin/operating-hours" element={<ProtectedRoute adminOnly><OperatingHoursPage /></ProtectedRoute>} />
           <Route path="/admin/bookings" element={<ProtectedRoute adminOnly><ManageBookingsPage /></ProtectedRoute>} />
           <Route path="/admin/quick-booking" element={<ProtectedRoute adminOnly><AdminBookingPage /></ProtectedRoute>} />
+          {/* Catch-all 404 */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
+      <ServerWakingOverlay />
     </div>
   );
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Layout />
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <Layout />
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

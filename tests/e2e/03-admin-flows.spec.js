@@ -15,10 +15,11 @@ test.describe('Admin Flows', () => {
 
   test('admin can create category', async ({ page }) => {
     await page.goto('/admin/categories');
-    await page.getByRole('button', { name: /Add Category/i }).click();
+    await page.getByRole('button', { name: /\+ Add Category/i }).first().click();
     const name = `TestCat_${Date.now()}`;
     await page.fill('input[id="category-name"]', name);
-    await page.getByRole('button', { name: /Create Category/i }).click();
+    // Use submit button inside the form specifically
+    await page.locator('form').getByRole('button', { name: /Create Category/i }).click();
     await expect(page.getByText(name)).toBeVisible();
   });
 
