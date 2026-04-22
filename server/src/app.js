@@ -78,13 +78,17 @@ app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/config', configRoutes);
 
-// Serve static files in production
-const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
-app.use(express.static(clientDist));
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api/')) return next();
-  res.sendFile(path.join(clientDist, 'index.html'));
-});
+// On Vercel, frontend is served by Vercel CDN — skip static serving
+// On traditional hosts (Render/local), serve built React app
+const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+if (!isServerless) {
+  const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
+  app.use(express.static(clientDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
 
 app.use(errorHandler);
 

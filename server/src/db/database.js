@@ -1,5 +1,4 @@
 import pg from 'pg';
-import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 import { DB_PATH, DATABASE_URL } from '../config.js';
@@ -13,12 +12,11 @@ if (usePostgres) {
   const pool = new Pool({
     connectionString: DATABASE_URL,
     ssl: { rejectUnauthorized: false },
-    max: 5, // Neon free tier has 10 connection limit — leave headroom
+    max: 5,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,
   });
 
-  // Async adapter matching better-sqlite3's interface (all methods return Promises)
   db = {
     isPostgres: true,
     prepare(sql) {
@@ -69,7 +67,8 @@ if (usePostgres) {
   };
   console.log('Using PostgreSQL database');
 } else {
-  // SQLite for local dev — wrap sync methods to return Promises for consistency
+  // SQLite for local dev only — lazy import to avoid build errors on Vercel
+  const { default: Database } = await import('better-sqlite3');
   const dataDir = path.dirname(DB_PATH);
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 

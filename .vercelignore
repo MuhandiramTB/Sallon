@@ -1,0 +1,14 @@
+node_modules
+.git
+tests
+test-results
+playwright-report
+_bmad
+_bmad-output
+.claude
+.vscode
+*.md
+server/data
+*.db
+*.db-wal
+*.db-shm
