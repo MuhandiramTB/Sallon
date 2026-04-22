@@ -6,3 +6,6 @@ server/data/*.db-shm
 client/dist/
 .claude
 _bmad
+test-results/
+playwright-report/
+tests/e2e/screenshots/
