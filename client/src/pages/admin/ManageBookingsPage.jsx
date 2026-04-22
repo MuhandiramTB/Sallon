@@ -99,29 +99,28 @@ export default function ManageBookingsPage() {
 
   return (
     <div className="py-6 animate-fade-in">
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
         <h1 className="text-2xl font-bold text-white">
           {isDailyView ? "Today's Schedule" : 'All Bookings'}
         </h1>
-        <Button variant="secondary" onClick={() => setIsDailyView(!isDailyView)} className="text-sm">
-          {isDailyView ? 'Show All' : 'Daily View'}
-        </Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
+            className="border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[40px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [&>option]:bg-[#2a2a3d] [&>option]:text-white">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          {isDailyView && (
+            <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
+              className="border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[40px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [color-scheme:dark]" />
+          )}
+          <Button variant="secondary" onClick={() => setIsDailyView(!isDailyView)} className="text-sm">
+            {isDailyView ? 'Show All' : 'Daily View'}
+          </Button>
+        </div>
       </div>
-
-      <Card className="flex gap-3 mb-6 flex-wrap p-4">
-        {isDailyView && (
-          <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
-            className="border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[44px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [color-scheme:dark]" />
-        )}
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
-          className="border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[44px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [&>option]:bg-[#2a2a3d] [&>option]:text-white">
-          <option value="">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </Card>
 
       {isLoading ? (
         <Spinner />
