@@ -118,9 +118,8 @@ CREATE TABLE IF NOT EXISTS salon_info (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-INSERT INTO salon_info (id, owner_name, phone, whatsapp, email, address, booking_note)
-SELECT 1, 'Salon Owner', '+94 77 000 0000', '+94 77 000 0000', 'info@sallonart.lk',
-       '123 Main Street, Colombo', 'For any booking changes or cancellations, please WhatsApp or call us.'
+INSERT INTO salon_info (id, booking_note)
+SELECT 1, 'For any booking changes or cancellations, please WhatsApp or call us.'
 WHERE NOT EXISTS (SELECT 1 FROM salon_info WHERE id = 1);
 `
   },
@@ -247,9 +246,8 @@ CREATE TABLE IF NOT EXISTS salon_info (
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
-INSERT OR IGNORE INTO salon_info (id, owner_name, phone, whatsapp, email, address, booking_note)
-VALUES (1, 'Salon Owner', '+94 77 000 0000', '+94 77 000 0000', 'info@sallonart.lk',
-        '123 Main Street, Colombo', 'For any booking changes or cancellations, please WhatsApp or call us.');
+INSERT OR IGNORE INTO salon_info (id, booking_note)
+VALUES (1, 'For any booking changes or cancellations, please WhatsApp or call us.');
 `
   },
 ];

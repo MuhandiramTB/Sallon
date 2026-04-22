@@ -10,6 +10,51 @@ const INITIAL = {
   googleMapsUrl: '', facebookUrl: '', instagramUrl: '', bookingNote: '',
 };
 
+const CC = '+94';
+
+// Strip the "+94" prefix (and any spaces after it) for display.
+const stripCC = (val = '') => {
+  const s = String(val).trim();
+  if (s.startsWith(CC)) return s.slice(CC.length).replace(/^\s+/, '');
+  if (s.startsWith('94')) return s.slice(2).replace(/^\s+/, '');
+  return s;
+};
+
+// Re-attach "+94 " for storage. Empty input → empty string (no "+94" alone).
+const addCC = (val = '') => {
+  const s = String(val).trim();
+  if (!s) return '';
+  // Allow user to paste a full international number (keep as-is)
+  if (s.startsWith('+')) return s;
+  return `${CC} ${s}`;
+};
+
+/** Phone input with a fixed "+94" prefix. Stores value as "+94 77 123 4567". */
+function PhoneInput({ label, value, onChange, placeholder }) {
+  const local = stripCC(value);
+  return (
+    <div className="mb-4">
+      <label className="block text-sm font-medium text-white/70 mb-1.5">{label}</label>
+      <div className="flex">
+        <span className="inline-flex items-center px-3.5 bg-white/10 border border-white/10 border-r-0 rounded-l-lg text-white/80 font-mono text-sm select-none">
+          {CC}
+        </span>
+        <input
+          type="tel"
+          inputMode="numeric"
+          value={local}
+          onChange={(e) => {
+            const clean = e.target.value.replace(/[^0-9\s]/g, '');
+            onChange(addCC(clean));
+          }}
+          placeholder={placeholder}
+          className="flex-1 w-full px-4 py-2.5 border border-white/10 rounded-r-lg text-[15px] min-h-[44px] bg-white/5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent hover:border-white/20"
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function SalonInfoPage() {
   const [form, setForm] = useState(INITIAL);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,6 +72,7 @@ export default function SalonInfoPage() {
   };
 
   const handleChange = (field) => (e) => setForm({ ...form, [field]: e.target.value });
+  const handlePhoneChange = (field) => (newValue) => setForm({ ...form, [field]: newValue });
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -64,8 +110,8 @@ export default function SalonInfoPage() {
         <Card className="mb-5">
           <h3 className="font-semibold text-white mb-4">Primary Contact</h3>
           <Input label="Owner / Salon Name" value={form.ownerName} onChange={handleChange('ownerName')} placeholder="e.g. Kamal Perera" />
-          <Input label="Phone (for calls)" value={form.phone} onChange={handleChange('phone')} placeholder="+94 77 123 4567" />
-          <Input label="WhatsApp Number" value={form.whatsapp} onChange={handleChange('whatsapp')} placeholder="+94 77 123 4567" />
+          <PhoneInput label="Phone (for calls)" value={form.phone} onChange={handlePhoneChange('phone')} placeholder="77 123 4567" />
+          <PhoneInput label="WhatsApp Number" value={form.whatsapp} onChange={handlePhoneChange('whatsapp')} placeholder="77 123 4567" />
           <Input label="Email" type="email" value={form.email} onChange={handleChange('email')} placeholder="info@sallonart.lk" />
         </Card>
 
