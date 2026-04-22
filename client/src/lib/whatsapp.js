@@ -3,19 +3,27 @@ import { formatDate, formatTime } from './formatDate.js';
 /**
  * Clean a phone number for wa.me — digits only, no +, no spaces, no dashes.
  * wa.me requires international format (country code + number) without +.
+ * For Sri Lankan numbers: if it starts with "0" (local format) and has 10 digits,
+ * drop the 0 and prepend 94.
  */
 function cleanPhone(phone) {
   if (!phone) return '';
-  return String(phone).replace(/[^0-9]/g, '');
+  let digits = String(phone).replace(/[^0-9]/g, '');
+  // 10-digit number starting with 0 (e.g. 0771234567) → assume SL local → 94771234567
+  if (digits.length === 10 && digits.startsWith('0')) {
+    digits = '94' + digits.slice(1);
+  }
+  return digits;
 }
 
 /**
  * Build a wa.me link with a pre-filled message.
  * Returns '' if phone is missing/invalid.
+ * Valid: 11-13 digits total (country code + local number).
  */
 export function buildWhatsAppLink(phone, message) {
   const clean = cleanPhone(phone);
-  if (!clean) return '';
+  if (!clean || clean.length < 10 || clean.length > 15) return '';
   const encoded = encodeURIComponent(message || '');
   return `https://wa.me/${clean}?text=${encoded}`;
 }
