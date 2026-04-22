@@ -4,7 +4,11 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/index.js",
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "db:view": "node src/db/view.js",
+    "db:reset": "node -e \"import('fs').then(fs=>{['sallon.db','sallon.db-wal','sallon.db-shm'].forEach(f=>{try{fs.unlinkSync('data/'+f)}catch(e){}});console.log('DB reset')})\"",
+    "db:seed-demo": "node src/db/seed-demo.js",
+    "db:fresh": "npm run db:reset && node -e \"import('./src/db/migrate.js').then(m=>m.runMigrations()).then(()=>import('./src/db/seed.js')).then(s=>s.seedAdmin()).then(()=>import('./src/db/seed-demo.js'))\""
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
