@@ -80,7 +80,8 @@ router.patch('/:id/cancel', authMiddleware, async (req, res, next) => {
     if (!booking) return res.status(404).json({ error: 'Booking not found' });
     if (booking.status !== 'pending') return res.status(400).json({ error: 'Only pending bookings can be cancelled' });
 
-    await db.prepare("UPDATE bookings SET status = 'cancelled', updated_at = datetime('now') WHERE id = ?").run(req.params.id);
+    const nowFn = db.isPostgres ? 'NOW()' : "datetime('now')";
+    await db.prepare(`UPDATE bookings SET status = 'cancelled', updated_at = ${nowFn} WHERE id = ?`).run(req.params.id);
     res.json({ data: { message: 'Booking cancelled' } });
   } catch (err) {
     next(err);

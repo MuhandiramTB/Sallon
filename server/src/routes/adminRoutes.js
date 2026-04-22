@@ -135,7 +135,8 @@ router.patch('/bookings/:id', authMiddleware, adminMiddleware, validate(updateBo
     if (!booking) return res.status(404).json({ error: 'Booking not found' });
 
     const { status } = req.validatedBody;
-    await db.prepare("UPDATE bookings SET status = ?, updated_at = datetime('now') WHERE id = ?").run(status, req.params.id);
+    const nowFn = db.isPostgres ? 'NOW()' : "datetime('now')";
+    await db.prepare(`UPDATE bookings SET status = ?, updated_at = ${nowFn} WHERE id = ?`).run(status, req.params.id);
 
     const updated = await db.prepare(`
       SELECT b.id, b.booking_date as bookingDate, b.start_time as startTime, b.end_time as endTime,
