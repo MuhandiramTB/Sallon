@@ -8,6 +8,7 @@ import Button from '../ui/Button.jsx';
 import Card from '../ui/Card.jsx';
 import Spinner from '../ui/Spinner.jsx';
 import ContactStrip from '../components/ContactStrip.jsx';
+import SendBookingWhatsApp from '../components/SendBookingWhatsApp.jsx';
 
 export default function BookingPage() {
   const { serviceId } = useParams();
@@ -64,8 +65,11 @@ export default function BookingPage() {
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">Booking Confirmed!</h2>
-          <p className="text-white/60 mb-5">Your appointment has been booked successfully.</p>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-5 text-left space-y-3 mb-6">
+          <p className="text-white/60 mb-5">Your appointment has been booked. Let the salon know on WhatsApp:</p>
+          <div className="mb-5">
+            <SendBookingWhatsApp booking={success} customer={user} />
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-5 text-left space-y-3 mb-5">
             <div className="flex justify-between"><span className="text-white/60 text-sm">Service</span><span className="font-medium text-white text-sm">{success.serviceName}</span></div>
             <div className="flex justify-between"><span className="text-white/60 text-sm">Date</span><span className="font-medium text-white text-sm">{formatDate(success.bookingDate)}</span></div>
             <div className="flex justify-between"><span className="text-white/60 text-sm">Time</span><span className="font-medium text-white text-sm">{formatTime(success.startTime)} - {formatTime(success.endTime)}</span></div>
@@ -76,7 +80,7 @@ export default function BookingPage() {
             <ContactStrip />
           </div>
           <div className="flex gap-3">
-            <Button onClick={() => navigate('/my-bookings')} className="flex-1">My Bookings</Button>
+            <Button onClick={() => navigate('/my-bookings')} variant="secondary" className="flex-1">My Bookings</Button>
             <Button onClick={() => navigate('/services')} variant="secondary" className="flex-1">Book Another</Button>
           </div>
         </Card>
