@@ -83,9 +83,20 @@ INSERT INTO package_items (package_id, service_id) VALUES
 
 -- ============================================
 -- OPERATING HOURS (Mon-Sat open 9AM-7PM, Sunday closed)
+-- Upsert — creates rows if missing, updates if already exist
 -- ============================================
-UPDATE operating_hours SET is_closed = 1 WHERE day_of_week = 0;
-UPDATE operating_hours SET is_closed = 0, open_time = '09:00', close_time = '19:00' WHERE day_of_week BETWEEN 1 AND 6;
+INSERT INTO operating_hours (day_of_week, open_time, close_time, is_closed) VALUES
+  (0, '09:00', '19:00', 1),   -- Sunday: CLOSED
+  (1, '09:00', '19:00', 0),   -- Monday
+  (2, '09:00', '19:00', 0),   -- Tuesday
+  (3, '09:00', '19:00', 0),   -- Wednesday
+  (4, '09:00', '19:00', 0),   -- Thursday
+  (5, '09:00', '19:00', 0),   -- Friday
+  (6, '09:00', '19:00', 0)    -- Saturday
+ON CONFLICT (day_of_week) DO UPDATE SET
+  open_time = EXCLUDED.open_time,
+  close_time = EXCLUDED.close_time,
+  is_closed = EXCLUDED.is_closed;
 
 -- ============================================
 -- VERIFY — see the counts
