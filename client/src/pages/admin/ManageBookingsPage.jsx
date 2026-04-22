@@ -11,9 +11,9 @@ import Spinner from '../../ui/Spinner.jsx';
 import { openWhatsApp, waTemplates } from '../../lib/whatsapp.js';
 
 const STATUS_ACTIONS = {
-  confirm: { title: 'Confirm & Notify?', message: 'This will confirm the booking and open WhatsApp so you can send the confirmation to the customer.', confirmLabel: 'Yes, Confirm & Notify', variant: 'warning', newStatus: 'confirmed' },
-  complete: { title: 'Mark as Completed?', message: 'This will mark the appointment as completed and open WhatsApp so you can send a thank-you message.', confirmLabel: 'Yes, Complete', variant: 'warning', newStatus: 'completed' },
-  cancel: { title: 'Cancel & Notify?', message: 'This will cancel the booking and open WhatsApp so you can notify the customer.', confirmLabel: 'Yes, Cancel & Notify', variant: 'danger', newStatus: 'cancelled' },
+  confirm: { title: 'Confirm Booking?', message: 'This will confirm the appointment for the customer.', confirmLabel: 'Yes, Confirm', variant: 'warning', newStatus: 'confirmed' },
+  complete: { title: 'Mark as Completed?', message: 'This will mark the appointment as completed.', confirmLabel: 'Yes, Complete', variant: 'warning', newStatus: 'completed' },
+  cancel: { title: 'Cancel Booking?', message: 'This will cancel the appointment. The time slot will become available again.', confirmLabel: 'Yes, Cancel', variant: 'danger', newStatus: 'cancelled' },
 };
 
 export default function ManageBookingsPage() {
@@ -24,8 +24,11 @@ export default function ManageBookingsPage() {
   const [isDailyView, setIsDailyView] = useState(false);
   const [actionTarget, setActionTarget] = useState(null);
   const [isActioning, setIsActioning] = useState(false);
-  const [toast, setToast] = useState('');
+  const [toast, setToast] = useState(null); // { message, type }
   const [salonName, setSalonName] = useState('our salon');
+
+  const showError = (msg) => setToast({ message: msg, type: 'error' });
+  const showSuccess = (msg) => setToast({ message: msg, type: 'success' });
 
   const loadBookings = async () => {
     setIsLoading(true);
@@ -45,12 +48,12 @@ export default function ManageBookingsPage() {
 
   const sendWhatsApp = (b, kind) => {
     if (!b.customerPhone) {
-      setToast('Customer has no phone number saved.');
+      showError('Customer has no phone number saved.');
       return;
     }
     const message = waTemplates[kind]({ ...b, salonName, appUrl: window.location.origin });
     const ok = openWhatsApp(b.customerPhone, message);
-    if (!ok) setToast('Could not open WhatsApp. Check the customer phone number format.');
+    if (!ok) showError('Could not open WhatsApp. Check the customer phone number format.');
   };
 
   const handleAction = async () => {
@@ -59,20 +62,16 @@ export default function ManageBookingsPage() {
     try {
       const config = STATUS_ACTIONS[actionTarget.action];
       await api(`/admin/bookings/${actionTarget.bookingId}`, { method: 'PATCH', body: { status: config.newStatus } });
-      const booking = actionTarget.booking;
-      const notifyKind = actionTarget.action === 'confirm' ? 'confirm'
-        : actionTarget.action === 'cancel' ? 'cancel'
-        : actionTarget.action === 'complete' ? 'complete' : null;
       setActionTarget(null);
       loadBookings();
-      // After status change, offer WhatsApp notification
-      if (notifyKind && booking?.customerPhone) {
-        const message = waTemplates[notifyKind]({ ...booking, salonName, appUrl: window.location.origin });
-        openWhatsApp(booking.customerPhone, message);
-      }
+      // Show success toast — admin uses WhatsApp button separately
+      const successMsg = actionTarget.action === 'confirm' ? 'Booking confirmed'
+        : actionTarget.action === 'complete' ? 'Booking marked as completed'
+        : actionTarget.action === 'cancel' ? 'Booking cancelled' : 'Updated';
+      showSuccess(successMsg);
     } catch (err) {
       setActionTarget(null);
-      setToast(err.message);
+      showError(err.message);
     } finally { setIsActioning(false); }
   };
 
@@ -148,8 +147,8 @@ export default function ManageBookingsPage() {
                 {b.status === 'pending' && (
                   <button onClick={() => setActionTarget({ bookingId: b.id, action: 'confirm', booking: b })}
                     className="text-xs font-medium bg-green-500/20 text-green-400 px-3 py-2 rounded-lg hover:bg-green-500/30 min-h-[36px] transition-colors"
-                    title="Confirm booking + open WhatsApp to notify">
-                    ✅ Confirm
+                    title="Confirm booking">
+                    Confirm
                   </button>
                 )}
                 {b.status === 'confirmed' && (
@@ -166,11 +165,11 @@ export default function ManageBookingsPage() {
                 )}
                 {b.customerPhone && (
                   <button
-                    onClick={() => sendWhatsApp(b, b.status === 'pending' ? 'confirm' : b.status === 'completed' ? 'complete' : 'reminder')}
-                    className="text-xs font-medium bg-green-600/20 text-green-400 px-3 py-2 rounded-lg hover:bg-green-600/30 min-h-[36px] transition-colors ml-auto flex items-center gap-1"
-                    title="Send WhatsApp message to customer">
+                    onClick={() => sendWhatsApp(b, b.status === 'pending' || b.status === 'confirmed' ? 'confirm' : b.status === 'completed' ? 'complete' : b.status === 'cancelled' ? 'cancel' : 'reminder')}
+                    className="text-xs font-medium bg-green-600/20 text-green-400 px-3 py-2 rounded-lg hover:bg-green-600/30 min-h-[36px] transition-colors ml-auto flex items-center gap-1.5"
+                    title="Send message to customer on WhatsApp">
                     <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.693.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/></svg>
-                    WhatsApp
+                    Send Confirm Msg
                   </button>
                 )}
               </div>
@@ -191,7 +190,7 @@ export default function ManageBookingsPage() {
         variant={actionConfig.variant || 'warning'}
       />
 
-      {toast && <Toast message={toast} type="error" onClose={() => setToast('')} />}
+      {toast && <Toast message={toast.message} type={toast.type || 'error'} onClose={() => setToast(null)} />}
     </div>
   );
 }
