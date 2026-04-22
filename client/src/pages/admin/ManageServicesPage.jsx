@@ -114,40 +114,44 @@ export default function ManageServicesPage() {
       {services.length === 0 ? (
         <EmptyState icon="✂️" title="No services yet" description="Add your salon services with pricing." actionLabel="Add Service" onAction={() => openCreate(false)} />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {services.map((svc) => (
-            <Card key={svc.id} className={`transition-opacity ${!svc.isActive ? 'opacity-50' : ''}`}>
-              <div className="flex flex-col gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <h3 className="font-semibold text-white">{svc.name}</h3>
-                    <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full">{svc.categoryName}</span>
-                    {svc.isPackage ? (
+            <Card key={svc.id} className={`py-4 transition-opacity ${!svc.isActive ? 'opacity-50' : ''}`}>
+              <div className="flex items-start justify-between mb-2 gap-2">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-white truncate">{svc.name || 'Unnamed Service'}</h3>
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full">{svc.categoryName || 'No category'}</span>
+                    {svc.isPackage && (
                       <span className="text-xs font-semibold text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-full">Package</span>
-                    ) : null}
+                    )}
                   </div>
-                  <div className="flex items-center gap-3 text-sm mb-2">
-                    <span className="font-bold text-accent">Rs. {svc.price}</span>
-                    <span className="text-white/70">{svc.durationMinutes} min</span>
-                  </div>
-                  {svc.isPackage && svc.packageItems?.length > 0 && (
-                    <p className="text-xs text-white/60 mb-2">
-                      Includes: {svc.packageItems.map((i) => i.name).join(' + ')}
-                    </p>
-                  )}
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <button onClick={() => toggleActive(svc)}
-                    className={`text-xs font-medium px-3 py-1.5 rounded-full min-h-[36px] transition-colors ${svc.isActive ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' : 'bg-white/5 text-white/40 hover:bg-white/10'}`}>
-                    {svc.isActive ? 'Active' : 'Inactive'}
-                  </button>
-                  <button onClick={() => openEdit(svc)} className="text-xs font-medium bg-blue-500/20 text-blue-400 px-3 py-1.5 rounded-lg hover:bg-blue-500/30 min-h-[36px] transition-colors">
-                    Edit
-                  </button>
-                  <button onClick={() => setDeleteTarget(svc)} className="text-xs font-medium bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/30 min-h-[36px] transition-colors">
-                    Delete
-                  </button>
-                </div>
+              </div>
+
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-lg font-bold text-accent">Rs. {svc.price ?? 0}</span>
+                <span className="text-white/70 text-sm">&middot; {svc.durationMinutes ?? '?'} min</span>
+              </div>
+
+              {svc.isPackage && svc.packageItems?.length > 0 && (
+                <p className="text-xs text-white/60 mb-3 line-clamp-2">
+                  <span className="text-white/40">Includes: </span>
+                  {svc.packageItems.map((i) => i.name).join(' + ')}
+                </p>
+              )}
+
+              <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-white/5">
+                <button onClick={() => toggleActive(svc)}
+                  className={`text-xs font-medium px-3 py-1.5 rounded-lg min-h-[36px] transition-colors ${svc.isActive ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}>
+                  {svc.isActive ? 'Active' : 'Inactive'}
+                </button>
+                <button onClick={() => openEdit(svc)} className="text-xs font-medium bg-blue-500/20 text-blue-400 px-3 py-1.5 rounded-lg hover:bg-blue-500/30 min-h-[36px] transition-colors">
+                  Edit
+                </button>
+                <button onClick={() => setDeleteTarget(svc)} className="text-xs font-medium bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/30 min-h-[36px] transition-colors ml-auto">
+                  Delete
+                </button>
               </div>
             </Card>
           ))}

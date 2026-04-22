@@ -21,7 +21,10 @@ if (usePostgres) {
     isPostgres: true,
     prepare(sql) {
       let i = 0;
-      const pgSql = sql.replace(/\?/g, () => `$${++i}`);
+      let pgSql = sql.replace(/\?/g, () => `$${++i}`);
+      // Auto-quote camelCase aliases so PostgreSQL preserves case
+      // Matches: `as camelCase` or `AS camelCase` (with lowercase+uppercase mix)
+      pgSql = pgSql.replace(/\b[aA][sS]\s+([a-z][a-z0-9]*[A-Z]\w*)/g, 'AS "$1"');
       return {
         async get(...params) {
           const res = await pool.query(pgSql, params);
