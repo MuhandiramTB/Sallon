@@ -84,16 +84,20 @@ INSERT INTO package_items (package_id, service_id) VALUES
 -- ============================================
 -- OPERATING HOURS (Mon-Sat open 9AM-7PM, Sunday closed)
 -- Upsert — creates rows if missing, updates if already exist
+-- Ensures day_name column exists (safe to re-run)
 -- ============================================
-INSERT INTO operating_hours (day_of_week, open_time, close_time, is_closed) VALUES
-  (0, '09:00', '19:00', 1),   -- Sunday: CLOSED
-  (1, '09:00', '19:00', 0),   -- Monday
-  (2, '09:00', '19:00', 0),   -- Tuesday
-  (3, '09:00', '19:00', 0),   -- Wednesday
-  (4, '09:00', '19:00', 0),   -- Thursday
-  (5, '09:00', '19:00', 0),   -- Friday
-  (6, '09:00', '19:00', 0)    -- Saturday
+ALTER TABLE operating_hours ADD COLUMN IF NOT EXISTS day_name TEXT;
+
+INSERT INTO operating_hours (day_of_week, day_name, open_time, close_time, is_closed) VALUES
+  (0, 'Sunday',    '09:00', '19:00', 1),   -- Sunday: CLOSED
+  (1, 'Monday',    '09:00', '19:00', 0),
+  (2, 'Tuesday',   '09:00', '19:00', 0),
+  (3, 'Wednesday', '09:00', '19:00', 0),
+  (4, 'Thursday',  '09:00', '19:00', 0),
+  (5, 'Friday',    '09:00', '19:00', 0),
+  (6, 'Saturday',  '09:00', '19:00', 0)
 ON CONFLICT (day_of_week) DO UPDATE SET
+  day_name = EXCLUDED.day_name,
   open_time = EXCLUDED.open_time,
   close_time = EXCLUDED.close_time,
   is_closed = EXCLUDED.is_closed;
@@ -107,3 +111,6 @@ UNION ALL SELECT 'Packages:', COUNT(*)::text FROM services WHERE is_package = 1
 UNION ALL SELECT 'Package items:', COUNT(*)::text FROM package_items
 UNION ALL SELECT 'Operating hours (open):', COUNT(*)::text FROM operating_hours WHERE is_closed = 0
 UNION ALL SELECT 'Operating hours (closed):', COUNT(*)::text FROM operating_hours WHERE is_closed = 1;
+
+-- Show final operating hours with day names
+SELECT day_of_week, day_name, open_time, close_time, is_closed FROM operating_hours ORDER BY day_of_week;

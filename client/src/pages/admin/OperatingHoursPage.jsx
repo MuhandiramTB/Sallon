@@ -28,6 +28,7 @@ export default function OperatingHoursPage() {
       (res.data || []).forEach((h) => {
         byDay.set(Number(h.dayOfWeek), {
           dayOfWeek: Number(h.dayOfWeek),
+          dayName: h.dayName || getDayName(Number(h.dayOfWeek)),
           openTime: h.openTime || '09:00',
           closeTime: h.closeTime || '19:00',
           isClosed: !!h.isClosed && h.isClosed !== 0,
@@ -37,6 +38,7 @@ export default function OperatingHoursPage() {
       const normalized = ALL_DAYS.map((day) =>
         byDay.get(day) || {
           dayOfWeek: day,
+          dayName: getDayName(day),
           openTime: '09:00',
           closeTime: '19:00',
           isClosed: day === 0, // Sunday default closed
@@ -211,7 +213,7 @@ export default function OperatingHoursPage() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="min-w-[110px] flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${h.isClosed ? 'bg-red-400' : 'bg-green-400'}`} />
-                <span className="font-semibold text-white">{getDayName(h.dayOfWeek)}</span>
+                <span className="font-semibold text-white">{h.dayName || getDayName(h.dayOfWeek)}</span>
               </div>
 
               <div className="flex items-center gap-2 flex-1 flex-wrap">

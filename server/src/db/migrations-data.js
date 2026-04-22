@@ -84,6 +84,23 @@ CREATE TABLE IF NOT EXISTS package_items (
 );
 `
   },
+  {
+    name: '004-operating-hours-day-name.sql',
+    sql: `
+ALTER TABLE operating_hours ADD COLUMN IF NOT EXISTS day_name TEXT;
+
+UPDATE operating_hours SET day_name = CASE day_of_week
+  WHEN 0 THEN 'Sunday'
+  WHEN 1 THEN 'Monday'
+  WHEN 2 THEN 'Tuesday'
+  WHEN 3 THEN 'Wednesday'
+  WHEN 4 THEN 'Thursday'
+  WHEN 5 THEN 'Friday'
+  WHEN 6 THEN 'Saturday'
+END
+WHERE day_name IS NULL OR day_name = '';
+`
+  },
 ];
 
 export const SQLITE_MIGRATIONS = [
@@ -172,6 +189,22 @@ CREATE TABLE IF NOT EXISTS package_items (
   FOREIGN KEY (service_id) REFERENCES services(id),
   UNIQUE(package_id, service_id)
 );
+`
+  },
+  {
+    name: '004-operating-hours-day-name.sql',
+    sql: `
+ALTER TABLE operating_hours ADD COLUMN day_name TEXT;
+
+UPDATE operating_hours SET day_name = CASE day_of_week
+  WHEN 0 THEN 'Sunday'
+  WHEN 1 THEN 'Monday'
+  WHEN 2 THEN 'Tuesday'
+  WHEN 3 THEN 'Wednesday'
+  WHEN 4 THEN 'Thursday'
+  WHEN 5 THEN 'Friday'
+  WHEN 6 THEN 'Saturday'
+END;
 `
   },
 ];

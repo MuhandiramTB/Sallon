@@ -9,7 +9,7 @@ const router = Router();
 router.get('/', async (req, res, next) => {
   try {
     const hours = await db.prepare(
-      'SELECT id, day_of_week as dayOfWeek, open_time as openTime, close_time as closeTime, is_closed as isClosed FROM operating_hours ORDER BY day_of_week'
+      'SELECT id, day_of_week as dayOfWeek, day_name as dayName, open_time as openTime, close_time as closeTime, is_closed as isClosed FROM operating_hours ORDER BY day_of_week'
     ).all();
     res.json({ data: hours });
   } catch (err) {
@@ -38,7 +38,7 @@ router.put('/', authMiddleware, adminMiddleware, async (req, res, next) => {
     await updateMany(hours);
 
     const updated = await db.prepare(
-      'SELECT id, day_of_week as dayOfWeek, open_time as openTime, close_time as closeTime, is_closed as isClosed FROM operating_hours ORDER BY day_of_week'
+      'SELECT id, day_of_week as dayOfWeek, day_name as dayName, open_time as openTime, close_time as closeTime, is_closed as isClosed FROM operating_hours ORDER BY day_of_week'
     ).all();
 
     res.json({ data: updated });
