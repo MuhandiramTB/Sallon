@@ -4,6 +4,8 @@ import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import ServerWakingOverlay from './components/ServerWakingOverlay.jsx';
+import OfflineBanner from './components/OfflineBanner.jsx';
+import RateLimitOverlay from './components/RateLimitOverlay.jsx';
 import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
@@ -28,6 +30,7 @@ function Layout() {
 
   return (
     <div className="min-h-screen bg-bg-dark">
+      <OfflineBanner />
       <Navbar />
       <div className={isFullBleed ? '' : 'container mx-auto p-4 pb-8'}>
         <Routes>
@@ -49,6 +52,7 @@ function Layout() {
         </Routes>
       </div>
       <ServerWakingOverlay />
+      <RateLimitOverlay />
     </div>
   );
 }

@@ -69,6 +69,15 @@ export async function api(endpoint, options = {}) {
     }
 
     const err = await res.json().catch(() => ({ error: 'Something went wrong' }));
+
+    // Rate limit hit — show full-screen countdown overlay
+    if (res.status === 429) {
+      const retryAfter = parseInt(res.headers.get('retry-after') || res.headers.get('ratelimit-reset') || '60', 10);
+      window.dispatchEvent(new CustomEvent('rate-limit', {
+        detail: { message: err.error, retryAfter: isNaN(retryAfter) ? 60 : retryAfter },
+      }));
+    }
+
     throw new ApiError(err.error || 'Request failed', res.status, err.details);
   }
 
