@@ -3,6 +3,7 @@ import { PORT } from './config.js';
 import { runMigrations } from './db/migrate.js';
 import { seedAdmin } from './db/seed.js';
 import db from './db/database.js';
+import './keepalive.js';
 
 async function start() {
   try {

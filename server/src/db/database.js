@@ -13,7 +13,9 @@ if (usePostgres) {
   const pool = new Pool({
     connectionString: DATABASE_URL,
     ssl: { rejectUnauthorized: false },
-    max: 10,
+    max: 5, // Neon free tier has 10 connection limit — leave headroom
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000,
   });
 
   // Async adapter matching better-sqlite3's interface (all methods return Promises)
