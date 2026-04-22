@@ -8,13 +8,11 @@ export async function seedAdmin() {
     return;
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE email = ? AND role = ?').get(ADMIN_EMAIL, 'admin');
-  if (existing) {
-    return;
-  }
+  const existing = await db.prepare('SELECT id FROM users WHERE email = ? AND role = ?').get(ADMIN_EMAIL, 'admin');
+  if (existing) return;
 
   const passwordHash = await hashPassword(ADMIN_PASSWORD);
-  db.prepare(
+  await db.prepare(
     "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)"
   ).run('Admin', ADMIN_EMAIL, passwordHash, 'admin');
 

@@ -22,6 +22,7 @@ if (isProduction && (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD)) {
 export const PORT = process.env.PORT || 3000;
 export const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-secret-never-use-in-prod';
 export const DB_PATH = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'sallon.db');
+export const DATABASE_URL = process.env.DATABASE_URL || null;
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 export const SALON_NAME = process.env.SALON_NAME || 'SallonArt';

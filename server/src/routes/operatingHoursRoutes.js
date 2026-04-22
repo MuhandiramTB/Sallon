@@ -6,15 +6,19 @@ import { adminMiddleware } from '../middleware/adminMiddleware.js';
 const router = Router();
 
 // GET /api/v1/operating-hours — public
-router.get('/', (req, res) => {
-  const hours = db.prepare(
-    'SELECT id, day_of_week as dayOfWeek, open_time as openTime, close_time as closeTime, is_closed as isClosed FROM operating_hours ORDER BY day_of_week'
-  ).all();
-  res.json({ data: hours });
+router.get('/', async (req, res, next) => {
+  try {
+    const hours = await db.prepare(
+      'SELECT id, day_of_week as dayOfWeek, open_time as openTime, close_time as closeTime, is_closed as isClosed FROM operating_hours ORDER BY day_of_week'
+    ).all();
+    res.json({ data: hours });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // PUT /api/v1/operating-hours — admin (bulk update all days)
-router.put('/', authMiddleware, adminMiddleware, (req, res, next) => {
+router.put('/', authMiddleware, adminMiddleware, async (req, res, next) => {
   try {
     const { hours } = req.body;
     if (!Array.isArray(hours)) {
@@ -25,15 +29,15 @@ router.put('/', authMiddleware, adminMiddleware, (req, res, next) => {
       'UPDATE operating_hours SET open_time = ?, close_time = ?, is_closed = ? WHERE day_of_week = ?'
     );
 
-    const updateMany = db.transaction((items) => {
+    const updateMany = db.transaction(async (items) => {
       for (const item of items) {
-        update.run(item.openTime, item.closeTime, item.isClosed ? 1 : 0, item.dayOfWeek);
+        await update.run(item.openTime, item.closeTime, item.isClosed ? 1 : 0, item.dayOfWeek);
       }
     });
 
-    updateMany(hours);
+    await updateMany(hours);
 
-    const updated = db.prepare(
+    const updated = await db.prepare(
       'SELECT id, day_of_week as dayOfWeek, open_time as openTime, close_time as closeTime, is_closed as isClosed FROM operating_hours ORDER BY day_of_week'
     ).all();
 

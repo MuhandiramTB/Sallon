@@ -4,9 +4,9 @@ import db from '../db/database.js';
  * Generate available time slots for a given service and date.
  * Excludes already-booked slots and past times for today.
  */
-export function getAvailableSlots(serviceId, date) {
+export async function getAvailableSlots(serviceId, date) {
   // Get service duration
-  const service = db.prepare('SELECT duration_minutes FROM services WHERE id = ? AND is_active = 1').get(serviceId);
+  const service = await db.prepare('SELECT duration_minutes FROM services WHERE id = ? AND is_active = 1').get(serviceId);
   if (!service) return { error: 'Service not found', slots: [] };
 
   // Get day of week (0=Sunday, 6=Saturday)
@@ -14,7 +14,7 @@ export function getAvailableSlots(serviceId, date) {
   const dayOfWeek = dateObj.getDay();
 
   // Get operating hours for that day
-  const hours = db.prepare('SELECT open_time, close_time, is_closed FROM operating_hours WHERE day_of_week = ?').get(dayOfWeek);
+  const hours = await db.prepare('SELECT open_time, close_time, is_closed FROM operating_hours WHERE day_of_week = ?').get(dayOfWeek);
   if (!hours || hours.is_closed) {
     return { error: null, slots: [], closed: true };
   }
@@ -33,7 +33,7 @@ export function getAvailableSlots(serviceId, date) {
   }
 
   // Get booked slots for this date (non-cancelled)
-  const booked = db.prepare(
+  const booked = await db.prepare(
     "SELECT start_time, end_time FROM bookings WHERE booking_date = ? AND status != 'cancelled'"
   ).all(date);
 
