@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api.js';
 import { getTodayDate, formatDate, formatTime } from '../../lib/formatDate.js';
 import BookingStatusBadge from '../../components/BookingStatusBadge.jsx';
@@ -17,11 +18,15 @@ const STATUS_ACTIONS = {
 };
 
 export default function ManageBookingsPage() {
+  const [searchParams] = useSearchParams();
+  const urlStatus = searchParams.get('status') || '';
+  const urlDate = searchParams.get('date') || '';
+
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filterDate, setFilterDate] = useState(getTodayDate());
-  const [filterStatus, setFilterStatus] = useState('');
-  const [isDailyView, setIsDailyView] = useState(false);
+  const [filterDate, setFilterDate] = useState(urlDate === 'today' ? getTodayDate() : (urlDate || getTodayDate()));
+  const [filterStatus, setFilterStatus] = useState(urlStatus);
+  const [isDailyView, setIsDailyView] = useState(urlDate === 'today' || !!urlDate);
   const [actionTarget, setActionTarget] = useState(null);
   const [isActioning, setIsActioning] = useState(false);
   const [toast, setToast] = useState(null); // { message, type }

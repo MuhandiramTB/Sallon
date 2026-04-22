@@ -41,40 +41,54 @@ export default function DashboardPage() {
       {/* Overall Stats */}
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          <Card className="flex flex-col items-center justify-center !px-2 py-4 text-center">
-            <div className="text-2xl font-bold text-accent">{stats.customers}</div>
-            <div className="text-xs text-white/60 mt-1">Customers</div>
-          </Card>
-          <Card className="flex flex-col items-center justify-center !px-2 py-4 text-center">
-            <div className="text-2xl font-bold text-white">{stats.services}</div>
-            <div className="text-xs text-white/60 mt-1">Services</div>
-          </Card>
-          <Card className="flex flex-col items-center justify-center !px-2 py-4 text-center">
-            <div className="text-2xl font-bold text-blue-400">{stats.bookings.total}</div>
-            <div className="text-xs text-white/60 mt-1 leading-tight">Total Bookings</div>
-          </Card>
-          <Card className="flex flex-col items-center justify-center !px-2 py-4 text-center">
-            <div className="text-2xl font-bold text-green-400">{stats.bookings.completed}</div>
-            <div className="text-xs text-white/60 mt-1">Completed</div>
-          </Card>
+          <Link to="/admin/bookings" className="block">
+            <Card interactive className="flex flex-col items-center justify-center !px-2 py-4 text-center h-full">
+              <div className="text-2xl font-bold text-accent">{stats.customers}</div>
+              <div className="text-xs text-white/60 mt-1">Customers</div>
+            </Card>
+          </Link>
+          <Link to="/admin/services" className="block">
+            <Card interactive className="flex flex-col items-center justify-center !px-2 py-4 text-center h-full">
+              <div className="text-2xl font-bold text-white">{stats.services}</div>
+              <div className="text-xs text-white/60 mt-1">Services</div>
+            </Card>
+          </Link>
+          <Link to="/admin/bookings" className="block">
+            <Card interactive className="flex flex-col items-center justify-center !px-2 py-4 text-center h-full">
+              <div className="text-2xl font-bold text-blue-400">{stats.bookings.total}</div>
+              <div className="text-xs text-white/60 mt-1 leading-tight">Total Bookings</div>
+            </Card>
+          </Link>
+          <Link to="/admin/bookings?status=completed" className="block">
+            <Card interactive className="flex flex-col items-center justify-center !px-2 py-4 text-center h-full">
+              <div className="text-2xl font-bold text-green-400">{stats.bookings.completed}</div>
+              <div className="text-xs text-white/60 mt-1">Completed</div>
+            </Card>
+          </Link>
         </div>
       )}
 
       {/* Today Stats */}
       <h2 className="text-sm font-semibold text-accent uppercase tracking-widest mb-3">Today</h2>
       <div className="grid grid-cols-3 gap-3 mb-6">
-        <Card className="flex flex-col items-center justify-center !px-2 py-4 text-center">
-          <div className="text-2xl font-bold text-white">{todayBookings.filter(b => b.status !== 'cancelled').length}</div>
-          <div className="text-xs text-white/60 mt-1">Appointments</div>
-        </Card>
-        <Card className="flex flex-col items-center justify-center !px-2 py-4 text-center">
-          <div className="text-2xl font-bold text-amber-400">{todayPending}</div>
-          <div className="text-xs text-white/60 mt-1">Pending</div>
-        </Card>
-        <Card className="flex flex-col items-center justify-center !px-2 py-4 text-center">
-          <div className="text-2xl font-bold text-green-400">{todayConfirmed}</div>
-          <div className="text-xs text-white/60 mt-1">Confirmed</div>
-        </Card>
+        <Link to="/admin/bookings?date=today" className="block">
+          <Card interactive className="flex flex-col items-center justify-center !px-2 py-4 text-center h-full">
+            <div className="text-2xl font-bold text-white">{todayBookings.filter(b => b.status !== 'cancelled').length}</div>
+            <div className="text-xs text-white/60 mt-1">Appointments</div>
+          </Card>
+        </Link>
+        <Link to="/admin/bookings?date=today&status=pending" className="block">
+          <Card interactive className="flex flex-col items-center justify-center !px-2 py-4 text-center h-full">
+            <div className="text-2xl font-bold text-amber-400">{todayPending}</div>
+            <div className="text-xs text-white/60 mt-1">Pending</div>
+          </Card>
+        </Link>
+        <Link to="/admin/bookings?date=today&status=confirmed" className="block">
+          <Card interactive className="flex flex-col items-center justify-center !px-2 py-4 text-center h-full">
+            <div className="text-2xl font-bold text-green-400">{todayConfirmed}</div>
+            <div className="text-xs text-white/60 mt-1">Confirmed</div>
+          </Card>
+        </Link>
       </div>
 
       {/* Today's Bookings */}
