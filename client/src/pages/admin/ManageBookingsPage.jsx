@@ -27,6 +27,10 @@ export default function ManageBookingsPage() {
   const [filterDate, setFilterDate] = useState(urlDate === 'today' ? getTodayDate() : (urlDate || getTodayDate()));
   const [filterStatus, setFilterStatus] = useState(urlStatus);
   const [isDailyView, setIsDailyView] = useState(urlDate === 'today' || !!urlDate);
+  const [search, setSearch] = useState('');
+  const [serviceFilter, setServiceFilter] = useState('');
+  const [sortBy, setSortBy] = useState('date-desc');
+  const [showFilters, setShowFilters] = useState(false);
   const [actionTarget, setActionTarget] = useState(null);
   const [isActioning, setIsActioning] = useState(false);
   const [toast, setToast] = useState(null); // { message, type }
@@ -97,9 +101,38 @@ export default function ManageBookingsPage() {
 
   const actionConfig = actionTarget ? STATUS_ACTIONS[actionTarget.action] : {};
 
+  // Distinct service names for the service filter dropdown
+  const serviceNames = [...new Set(bookings.map((b) => b.serviceName).filter(Boolean))].sort();
+
+  const filteredBookings = bookings.filter((b) => {
+    if (serviceFilter && b.serviceName !== serviceFilter) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      const hay = `${b.customerName || ''} ${b.customerPhone || ''} ${b.customerEmail || ''}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  const sortedBookings = [...filteredBookings].sort((a, b) => {
+    const dtA = `${a.bookingDate} ${a.startTime}`;
+    const dtB = `${b.bookingDate} ${b.startTime}`;
+    switch (sortBy) {
+      case 'date-asc': return dtA.localeCompare(dtB);
+      case 'date-desc': return dtB.localeCompare(dtA);
+      case 'name-asc': return (a.customerName || '').localeCompare(b.customerName || '');
+      case 'price-desc': return (b.price || 0) - (a.price || 0);
+      case 'price-asc': return (a.price || 0) - (b.price || 0);
+      default: return 0;
+    }
+  });
+
+  const hasActiveFilters = search || serviceFilter || sortBy !== 'date-desc';
+  const clearFilters = () => { setSearch(''); setServiceFilter(''); setSortBy('date-desc'); };
+
   return (
     <div className="py-6 animate-fade-in">
-      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <h1 className="text-2xl font-bold text-white">
           {isDailyView ? "Today's Schedule" : 'All Bookings'}
         </h1>
@@ -119,16 +152,80 @@ export default function ManageBookingsPage() {
           <Button variant="secondary" onClick={() => setIsDailyView(!isDailyView)} className="text-sm">
             {isDailyView ? 'Show All' : 'Daily View'}
           </Button>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`border rounded-lg px-3 py-2 min-h-[40px] text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              hasActiveFilters
+                ? 'bg-accent/20 text-accent border-accent/30'
+                : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'
+            }`}
+            title="Search, service filter, sort"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+            Filter & Sort{hasActiveFilters ? ' •' : ''}
+          </button>
         </div>
       </div>
 
+      {showFilters && (
+        <Card className="mb-5 animate-slide-up !p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs text-white/60 mb-1.5">Search (name / phone / email)</label>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="e.g. Kamal or 0771234567"
+                className="w-full border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[40px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-white/60 mb-1.5">Service</label>
+              <select
+                value={serviceFilter}
+                onChange={(e) => setServiceFilter(e.target.value)}
+                className="w-full border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[40px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [&>option]:bg-[#2a2a3d] [&>option]:text-white"
+              >
+                <option value="">All Services</option>
+                {serviceNames.map((n) => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-white/60 mb-1.5">Sort by</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[40px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [&>option]:bg-[#2a2a3d] [&>option]:text-white"
+              >
+                <option value="date-desc">Date (newest first)</option>
+                <option value="date-asc">Date (oldest first)</option>
+                <option value="name-asc">Customer name (A-Z)</option>
+                <option value="price-desc">Price (high to low)</option>
+                <option value="price-asc">Price (low to high)</option>
+              </select>
+            </div>
+          </div>
+          {hasActiveFilters && (
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
+              <span className="text-xs text-white/60">
+                Showing {sortedBookings.length} of {bookings.length}
+              </span>
+              <button onClick={clearFilters} className="text-xs text-accent hover:underline">
+                Clear filters
+              </button>
+            </div>
+          )}
+        </Card>
+      )}
+
       {isLoading ? (
         <Spinner />
-      ) : bookings.length === 0 ? (
+      ) : sortedBookings.length === 0 ? (
         <EmptyState icon="📅" title="No bookings found" description="No bookings match your current filters." />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {bookings.map((b) => (
+          {sortedBookings.map((b) => (
             <Card key={b.id} className="py-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
