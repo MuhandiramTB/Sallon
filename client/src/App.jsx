@@ -20,10 +20,11 @@ import ManageBookingsPage from './pages/admin/ManageBookingsPage.jsx';
 import AdminBookingPage from './pages/admin/AdminBookingPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import SalonInfoPage from './pages/admin/SalonInfoPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
-const FULL_BLEED = ['/', '/login', '/register'];
+const FULL_BLEED = ['/', '/login', '/register', '/forgot-password'];
 const NO_NAVBAR = []; // Add paths here if we ever need to hide navbar
 
 function Layout() {
@@ -39,6 +40,7 @@ function Layout() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/book/:serviceId" element={<ProtectedRoute><BookingPage /></ProtectedRoute>} />

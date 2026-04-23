@@ -123,6 +123,13 @@ SELECT 1, 'For any booking changes or cancellations, please WhatsApp or call us.
 WHERE NOT EXISTS (SELECT 1 FROM salon_info WHERE id = 1);
 `
   },
+  {
+    name: '006-salon-branding.sql',
+    sql: `
+ALTER TABLE salon_info ADD COLUMN IF NOT EXISTS salon_name TEXT DEFAULT '';
+ALTER TABLE salon_info ADD COLUMN IF NOT EXISTS logo_url TEXT DEFAULT '';
+`
+  },
 ];
 
 export const SQLITE_MIGRATIONS = [
@@ -248,6 +255,13 @@ CREATE TABLE IF NOT EXISTS salon_info (
 
 INSERT OR IGNORE INTO salon_info (id, booking_note)
 VALUES (1, 'For any booking changes or cancellations, please WhatsApp or call us.');
+`
+  },
+  {
+    name: '006-salon-branding.sql',
+    sql: `
+ALTER TABLE salon_info ADD COLUMN salon_name TEXT DEFAULT '';
+ALTER TABLE salon_info ADD COLUMN logo_url TEXT DEFAULT '';
 `
   },
 ];

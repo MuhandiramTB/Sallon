@@ -7,6 +7,8 @@ const router = Router();
 
 const SELECT_SQL = `SELECT id,
   owner_name as ownerName,
+  salon_name as salonName,
+  logo_url as logoUrl,
   phone, whatsapp, email, address,
   google_maps_url as googleMapsUrl,
   facebook_url as facebookUrl,
@@ -28,7 +30,8 @@ router.get('/', async (req, res, next) => {
 router.put('/', authMiddleware, adminMiddleware, async (req, res, next) => {
   try {
     const {
-      ownerName = '', phone = '', whatsapp = '', email = '', address = '',
+      ownerName = '', salonName = '', logoUrl = '',
+      phone = '', whatsapp = '', email = '', address = '',
       googleMapsUrl = '', facebookUrl = '', instagramUrl = '', bookingNote = '',
     } = req.body || {};
 
@@ -38,16 +41,17 @@ router.put('/', authMiddleware, adminMiddleware, async (req, res, next) => {
       const nowFn = db.isPostgres ? 'NOW()' : "datetime('now')";
       await db.prepare(
         `UPDATE salon_info SET
-           owner_name = ?, phone = ?, whatsapp = ?, email = ?, address = ?,
+           owner_name = ?, salon_name = ?, logo_url = ?,
+           phone = ?, whatsapp = ?, email = ?, address = ?,
            google_maps_url = ?, facebook_url = ?, instagram_url = ?, booking_note = ?,
            updated_at = ${nowFn}
          WHERE id = 1`
-      ).run(ownerName, phone, whatsapp, email, address, googleMapsUrl, facebookUrl, instagramUrl, bookingNote);
+      ).run(ownerName, salonName, logoUrl, phone, whatsapp, email, address, googleMapsUrl, facebookUrl, instagramUrl, bookingNote);
     } else {
       await db.prepare(
-        `INSERT INTO salon_info (id, owner_name, phone, whatsapp, email, address, google_maps_url, facebook_url, instagram_url, booking_note)
-         VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-      ).run(ownerName, phone, whatsapp, email, address, googleMapsUrl, facebookUrl, instagramUrl, bookingNote);
+        `INSERT INTO salon_info (id, owner_name, salon_name, logo_url, phone, whatsapp, email, address, google_maps_url, facebook_url, instagram_url, booking_note)
+         VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(ownerName, salonName, logoUrl, phone, whatsapp, email, address, googleMapsUrl, facebookUrl, instagramUrl, bookingNote);
     }
 
     const updated = await db.prepare(SELECT_SQL).get();

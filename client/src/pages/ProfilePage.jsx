@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../lib/api.js';
 import Input from '../ui/Input.jsx';
+import PasswordInput from '../ui/PasswordInput.jsx';
 import Button from '../ui/Button.jsx';
 import Card from '../ui/Card.jsx';
 
@@ -98,24 +99,21 @@ export default function ProfilePage() {
                 {passwordMsg}
               </div>
             )}
-            <Input
+            <PasswordInput
               label="Current Password"
-              type="password"
               value={passwordForm.currentPassword}
               onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
               required
             />
-            <Input
+            <PasswordInput
               label="New Password"
-              type="password"
               value={passwordForm.newPassword}
               onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
               placeholder="Min 6 characters"
               required
             />
-            <Input
+            <PasswordInput
               label="Confirm New Password"
-              type="password"
               value={passwordForm.confirmPassword}
               onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
               required

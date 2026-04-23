@@ -6,7 +6,8 @@ import Card from '../../ui/Card.jsx';
 import Spinner from '../../ui/Spinner.jsx';
 
 const INITIAL = {
-  ownerName: '', phone: '', whatsapp: '', email: '', address: '',
+  ownerName: '', salonName: '', logoUrl: '',
+  phone: '', whatsapp: '', email: '', address: '',
   googleMapsUrl: '', facebookUrl: '', instagramUrl: '', bookingNote: '',
 };
 
@@ -138,8 +139,24 @@ export default function SalonInfoPage() {
 
       <form onSubmit={handleSave}>
         <Card className="mb-5">
+          <h3 className="font-semibold text-white mb-2">Branding</h3>
+          <p className="text-xs text-white/60 mb-4">The salon name and logo shown throughout the app (navbar, login page, WhatsApp messages).</p>
+          <Input label="Salon Name (displayed on app)" value={form.salonName} onChange={handleChange('salonName')} placeholder="e.g. SallonArt Men's Salon" />
+          <Input label="Logo URL" value={form.logoUrl} onChange={handleChange('logoUrl')} placeholder="https://... (optional)" />
+          {form.logoUrl && (
+            <div className="mb-4">
+              <p className="text-xs text-white/60 mb-2">Logo preview:</p>
+              <img src={form.logoUrl} alt="logo preview"
+                className="w-16 h-16 rounded-lg object-cover border border-white/10 bg-white/5"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            </div>
+          )}
+        </Card>
+
+        <Card className="mb-5">
           <h3 className="font-semibold text-white mb-4">Primary Contact</h3>
-          <Input label="Owner / Salon Name" value={form.ownerName} onChange={handleChange('ownerName')} placeholder="e.g. Kamal Perera" />
+          <Input label="Owner Name" value={form.ownerName} onChange={handleChange('ownerName')} placeholder="e.g. Kamal Perera" />
           <PhoneInput label="Phone (for calls)" value={form.phone} onChange={handlePhoneChange('phone')} placeholder="77 123 4567" />
           <PhoneInput label="WhatsApp Number" value={form.whatsapp} onChange={handlePhoneChange('whatsapp')} placeholder="77 123 4567" showWaTest />
           <p className="text-xs text-white/50 -mt-2 mb-4">
