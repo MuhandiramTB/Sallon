@@ -83,23 +83,22 @@ export default function ManageBookingsPage() {
   };
 
   // One-click: confirm the booking AND open WhatsApp with the confirmation message.
-  // Used for pending bookings so admin doesn't have to click Confirm + Send Msg separately.
-  const confirmAndNotify = async (b) => {
-    // 1. Update status in DB first (optimistic — update UI immediately for responsiveness)
-    try {
-      await api(`/admin/bookings/${b.id}`, { method: 'PATCH', body: { status: 'confirmed' } });
-      showSuccess('Booking confirmed');
-      loadBookings();
-    } catch (err) {
-      showError(err.message);
-      return; // don't open WhatsApp if confirm failed
-    }
-    // 2. Open WhatsApp (only if customer has a phone)
+  // IMPORTANT: Open WhatsApp SYNCHRONOUSLY inside the click handler — browsers block window.open()
+  // after an async await (popup blocker). We fire the API call in parallel, not before the open.
+  const confirmAndNotify = (b) => {
+    // 1. Open WhatsApp immediately (sync, within user click) so popup blockers allow it
     if (b.customerPhone) {
       const message = waTemplates.confirm({ ...b, salonName, appUrl: window.location.origin });
-      openWhatsApp(b.customerPhone, message);
-      markConfirmSent(b.id);
+      const ok = openWhatsApp(b.customerPhone, message);
+      if (ok) markConfirmSent(b.id);
     }
+    // 2. Update status in background
+    api(`/admin/bookings/${b.id}`, { method: 'PATCH', body: { status: 'confirmed' } })
+      .then(() => {
+        showSuccess('Booking confirmed');
+        loadBookings();
+      })
+      .catch((err) => showError(err.message));
   };
 
   const handleAction = async () => {
@@ -154,29 +153,31 @@ export default function ManageBookingsPage() {
 
   return (
     <div className="py-6 animate-fade-in">
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-white">
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold text-white mb-3">
           {isDailyView ? "Today's Schedule" : 'All Bookings'}
         </h1>
         <div className="flex items-center gap-2 flex-wrap">
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
-            className="border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[40px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [&>option]:bg-[#2a2a3d] [&>option]:text-white">
+            className="flex-1 sm:flex-none min-w-0 border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-2 sm:px-3 py-2 min-h-[40px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [&>option]:bg-[#2a2a3d] [&>option]:text-white">
             <option value="">All Statuses</option>
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
-          {isDailyView && (
-            <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
-              className="border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[40px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [color-scheme:dark]" />
-          )}
-          <Button variant="secondary" onClick={() => setIsDailyView(!isDailyView)} className="text-sm">
-            {isDailyView ? 'Show All' : 'Daily View'}
-          </Button>
+          <button
+            onClick={() => setIsDailyView(!isDailyView)}
+            className="border border-white/10 bg-white/5 hover:bg-white/10 text-white rounded-lg px-3 py-2 min-h-[40px] text-sm font-medium transition-colors flex items-center gap-1.5 flex-shrink-0"
+            title={isDailyView ? 'Show all bookings' : 'Show today only'}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            <span className="hidden sm:inline">{isDailyView ? 'Show All' : 'Daily View'}</span>
+            <span className="sm:hidden">{isDailyView ? 'All' : 'Daily'}</span>
+          </button>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`border rounded-lg px-3 py-2 min-h-[40px] text-sm font-medium transition-colors flex items-center gap-1.5 ${
+            className={`border rounded-lg px-3 py-2 min-h-[40px] text-sm font-medium transition-colors flex items-center gap-1.5 flex-shrink-0 ${
               hasActiveFilters
                 ? 'bg-accent/20 text-accent border-accent/30'
                 : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'
@@ -184,9 +185,17 @@ export default function ManageBookingsPage() {
             title="Search, service filter, sort"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
-            Filter & Sort{hasActiveFilters ? ' •' : ''}
+            <span className="hidden sm:inline">Filter & Sort</span>
+            <span className="sm:hidden">Filter</span>
+            {hasActiveFilters && <span className="text-accent">•</span>}
           </button>
         </div>
+        {isDailyView && (
+          <div className="mt-2">
+            <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
+              className="w-full sm:w-auto border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[40px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent [color-scheme:dark]" />
+          </div>
+        )}
       </div>
 
       {showFilters && (
