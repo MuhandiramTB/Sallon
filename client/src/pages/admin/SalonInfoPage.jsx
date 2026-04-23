@@ -71,7 +71,7 @@ function LogoUpload({ value, onChange }) {
           <img
             src={value}
             alt="logo preview"
-            className="w-16 h-16 rounded-lg object-cover bg-white/10 flex-shrink-0"
+            className="w-16 h-16 rounded-full object-cover bg-white/10 border-2 border-accent/40 flex-shrink-0"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
           <div className="flex-1 min-w-0">

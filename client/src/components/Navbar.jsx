@@ -105,7 +105,18 @@ export default function Navbar() {
         <div className="container mx-auto px-4 py-2.5 flex items-center justify-between">
           {/* Logo */}
           <Link to={user?.role === 'admin' ? '/admin' : '/'} className="flex items-center gap-2.5 hover:opacity-90 transition-opacity flex-shrink-0">
-            {branding.logoUrl && <img src={branding.logoUrl} alt="" className="w-9 h-9 rounded-lg object-cover" />}
+            {branding.logoUrl ? (
+              <img
+                src={branding.logoUrl}
+                alt=""
+                className="w-10 h-10 rounded-full object-cover border-2 border-accent/40 bg-white/10 shadow-md shadow-accent/20"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gradient-gold flex items-center justify-center text-primary font-bold text-base shadow-md shadow-accent/20">
+                {branding.salonName?.charAt(0).toUpperCase() || 'S'}
+              </div>
+            )}
             <span className="text-xl font-bold tracking-tight">{branding.salonName}</span>
           </Link>
 
