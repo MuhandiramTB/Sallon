@@ -155,4 +155,38 @@ router.patch('/bookings/:id', authMiddleware, adminMiddleware, validate(updateBo
   }
 });
 
+// GET /api/v1/admin/users — list all customers with booking counts
+router.get('/users', authMiddleware, adminMiddleware, async (req, res, next) => {
+  try {
+    const users = await db.prepare(`
+      SELECT u.id, u.name, u.email, u.phone, u.role, u.created_at as createdAt,
+             (SELECT COUNT(*) FROM bookings b WHERE b.user_id = u.id) as bookingCount,
+             (SELECT COUNT(*) FROM bookings b WHERE b.user_id = u.id AND b.status = 'completed') as completedCount
+      FROM users u
+      WHERE u.role = 'customer'
+      ORDER BY u.created_at DESC
+    `).all();
+    res.json({ data: users });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/v1/admin/users/:id — delete a customer (cascades bookings)
+router.delete('/users/:id', authMiddleware, adminMiddleware, async (req, res, next) => {
+  try {
+    const user = await db.prepare('SELECT id, role FROM users WHERE id = ?').get(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.role === 'admin') return res.status(400).json({ error: 'Cannot delete admin account' });
+
+    // Delete bookings first (FK safety, especially on PG without ON DELETE CASCADE)
+    await db.prepare('DELETE FROM bookings WHERE user_id = ?').run(req.params.id);
+    await db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
+
+    res.json({ data: { message: 'User deleted' } });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

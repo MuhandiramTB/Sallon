@@ -22,6 +22,7 @@ import ProfilePage from './pages/ProfilePage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import SalonInfoPage from './pages/admin/SalonInfoPage.jsx';
+import ManageUsersPage from './pages/admin/ManageUsersPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
 const FULL_BLEED = ['/', '/login', '/register', '/forgot-password'];
@@ -51,6 +52,7 @@ function Layout() {
           <Route path="/admin/services" element={<ProtectedRoute adminOnly><ManageServicesPage /></ProtectedRoute>} />
           <Route path="/admin/operating-hours" element={<ProtectedRoute adminOnly><OperatingHoursPage /></ProtectedRoute>} />
           <Route path="/admin/salon-info" element={<ProtectedRoute adminOnly><SalonInfoPage /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute adminOnly><ManageUsersPage /></ProtectedRoute>} />
           <Route path="/admin/bookings" element={<ProtectedRoute adminOnly><ManageBookingsPage /></ProtectedRoute>} />
           <Route path="/admin/quick-booking" element={<ProtectedRoute adminOnly><AdminBookingPage /></ProtectedRoute>} />
           {/* Catch-all 404 */}

@@ -41,7 +41,7 @@ export default function DashboardPage() {
       {/* Overall Stats */}
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          <Link to="/admin/bookings" className="block">
+          <Link to="/admin/users" className="block">
             <Card interactive className="flex flex-col items-center justify-center !px-2 py-4 text-center h-full">
               <div className="text-2xl font-bold text-accent">{stats.customers}</div>
               <div className="text-xs text-white/60 mt-1">Customers</div>

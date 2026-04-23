@@ -71,3 +71,16 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Override browser autofill styling so our dark inputs stay dark
+   (Chrome/Safari by default paint autofilled fields white). */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.05) inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff;
+  transition: background-color 9999s ease-in-out 0s;
+}
