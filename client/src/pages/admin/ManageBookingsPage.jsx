@@ -26,7 +26,9 @@ export default function ManageBookingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [filterDate, setFilterDate] = useState(urlDate === 'today' ? getTodayDate() : (urlDate || getTodayDate()));
   const [filterStatus, setFilterStatus] = useState(urlStatus);
-  const [isDailyView, setIsDailyView] = useState(urlDate === 'today' || !!urlDate);
+  // Default to Daily View (shows today's bookings) — admin usually cares about today first.
+  // Override only when URL explicitly has no date and status filter is set (e.g. /admin/bookings?status=completed).
+  const [isDailyView, setIsDailyView] = useState(urlStatus && !urlDate ? false : true);
   const [search, setSearch] = useState('');
   const [serviceFilter, setServiceFilter] = useState('');
   const [sortBy, setSortBy] = useState('date-desc');
@@ -246,7 +248,7 @@ export default function ManageBookingsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sortedBookings.map((b) => (
-            <Card key={b.id} className="py-4">
+            <Card key={b.id} className="!p-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="text-lg font-bold text-accent">{formatTime(b.startTime)}</div>
