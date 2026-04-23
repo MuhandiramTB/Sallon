@@ -202,12 +202,12 @@ export default function ManageBookingsPage() {
         <Card className="mb-5 animate-slide-up !p-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs text-white/60 mb-1.5">Search (name / phone / email)</label>
+              <label className="block text-xs text-white/60 mb-1.5">Search</label>
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="e.g. Kamal or 0771234567"
+                placeholder="Name or mobile number"
                 className="w-full border border-white/10 bg-[#2a2a3d] text-white rounded-lg px-3 py-2 min-h-[40px] text-sm focus:ring-2 focus:ring-accent/50 focus:border-accent"
               />
             </div>
