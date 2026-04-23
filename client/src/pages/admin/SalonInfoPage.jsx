@@ -40,6 +40,73 @@ const toWaLink = (val = '') => {
   return digits ? `https://wa.me/${digits}` : '';
 };
 
+/** Logo upload: accepts an image file, converts to base64 data URL, enforces size limit. */
+function LogoUpload({ value, onChange }) {
+  const [error, setError] = useState('');
+  const MAX_BYTES = 200 * 1024; // 200 KB
+
+  const handleFile = (file) => {
+    setError('');
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('Please pick an image file (PNG, JPG, SVG).');
+      return;
+    }
+    if (file.size > MAX_BYTES) {
+      setError(`Image is too large (${Math.round(file.size / 1024)} KB). Max 200 KB — please compress first.`);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => onChange(e.target.result); // data:image/...;base64,...
+    reader.onerror = () => setError('Could not read the file.');
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="mb-4">
+      <label className="block text-sm font-medium text-white/70 mb-1.5">Logo</label>
+
+      {value && (
+        <div className="flex items-center gap-3 mb-3 p-3 bg-white/5 border border-white/10 rounded-lg">
+          <img
+            src={value}
+            alt="logo preview"
+            className="w-16 h-16 rounded-lg object-cover bg-white/10 flex-shrink-0"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-white/80 font-medium">Current logo</p>
+            <p className="text-xs text-white/50 truncate">
+              {value.startsWith('data:') ? 'Uploaded image' : value}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange('')}
+            className="text-xs text-red-400 hover:text-red-300 px-2 py-1 rounded hover:bg-red-500/10"
+            title="Remove logo"
+          >
+            Remove
+          </button>
+        </div>
+      )}
+
+      <label className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent/30 transition-colors cursor-pointer min-h-[40px]">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+        {value ? 'Replace Logo' : 'Upload Logo'}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => handleFile(e.target.files?.[0])}
+          className="hidden"
+        />
+      </label>
+      <p className="text-xs text-white/50 mt-1.5">PNG, JPG, or SVG. Max 200 KB. Square images look best.</p>
+      {error && <p className="text-red-400 text-xs mt-1.5">{error}</p>}
+    </div>
+  );
+}
+
 /** Phone input with a fixed "+94" prefix + inline validation + test button. */
 function PhoneInput({ label, value, onChange, placeholder, showWaTest = false }) {
   const local = stripCC(value);
@@ -142,16 +209,7 @@ export default function SalonInfoPage() {
           <h3 className="font-semibold text-white mb-2">Branding</h3>
           <p className="text-xs text-white/60 mb-4">The salon name and logo shown throughout the app (navbar, login page, WhatsApp messages).</p>
           <Input label="Salon Name (displayed on app)" value={form.salonName} onChange={handleChange('salonName')} placeholder="e.g. SallonArt Men's Salon" />
-          <Input label="Logo URL" value={form.logoUrl} onChange={handleChange('logoUrl')} placeholder="https://... (optional)" />
-          {form.logoUrl && (
-            <div className="mb-4">
-              <p className="text-xs text-white/60 mb-2">Logo preview:</p>
-              <img src={form.logoUrl} alt="logo preview"
-                className="w-16 h-16 rounded-lg object-cover border border-white/10 bg-white/5"
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              />
-            </div>
-          )}
+          <LogoUpload value={form.logoUrl} onChange={(val) => setForm((f) => ({ ...f, logoUrl: val }))} />
         </Card>
 
         <Card className="mb-5">

@@ -40,7 +40,8 @@ app.use(helmet({
 
 // CORS
 app.use(cors(isProduction ? {} : { origin: CORS_ORIGIN }));
-app.use(express.json({ limit: '100kb' }));
+// 1 MB limit accommodates base64-encoded logo uploads (~200 KB PNG → ~267 KB base64)
+app.use(express.json({ limit: '1mb' }));
 
 // Rate limiting
 const authLimiter = rateLimit({

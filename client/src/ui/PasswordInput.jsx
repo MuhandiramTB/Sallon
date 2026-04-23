@@ -30,7 +30,12 @@ export default function PasswordInput({ label, error, id, ...props }) {
           type="button"
           onClick={() => setVisible((v) => !v)}
           aria-label={visible ? 'Hide password' : 'Show password'}
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center text-white/50 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+          title={visible ? 'Hide password' : 'Show password'}
+          className={`absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${
+            visible
+              ? 'text-accent bg-accent/10 hover:bg-accent/20'
+              : 'text-white/70 hover:text-accent hover:bg-white/10'
+          }`}
         >
           {visible ? (
             // Eye with slash (hide)
