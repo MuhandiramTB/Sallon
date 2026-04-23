@@ -67,9 +67,18 @@ export default function RegisterPage() {
 
       <div className="relative z-10 w-full max-w-sm px-4 animate-scale-in">
         <div className="text-center mb-5">
-          <div className="w-12 h-12 bg-gradient-gold rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-accent/20">
-            <span className="text-lg font-bold text-primary">S</span>
-          </div>
+          {branding.logoUrl ? (
+            <img
+              src={branding.logoUrl}
+              alt={branding.salonName}
+              className="w-16 h-16 rounded-full object-cover border-2 border-accent/50 bg-white/10 mx-auto mb-3 shadow-lg shadow-accent/30"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          ) : (
+            <div className="w-16 h-16 bg-gradient-gold rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-accent/30 border-2 border-accent/50">
+              <span className="text-2xl font-bold text-primary">{branding.salonName?.charAt(0).toUpperCase() || 'S'}</span>
+            </div>
+          )}
           <h1 className="text-xl font-bold text-white">{branding.salonName}</h1>
           <p className="text-white/60 text-xs mt-1">Create your account</p>
         </div>

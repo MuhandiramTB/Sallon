@@ -5,7 +5,12 @@ export function getDayName(dayOfWeek) {
 }
 
 export function formatDate(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
+  if (!dateStr) return '';
+  // Date-only string (YYYY-MM-DD) → interpret as local midnight so tz doesn't shift the day.
+  // Timestamp string (ISO with time) → use as-is.
+  const isDateOnly = typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+  const date = new Date(isDateOnly ? dateStr + 'T00:00:00' : dateStr);
+  if (isNaN(date.getTime())) return '—';
   return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
