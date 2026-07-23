@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { BrandingProvider, useBranding } from './context/BrandingContext.jsx';
@@ -36,6 +36,14 @@ function Layout() {
   const isFullBleed = FULL_BLEED.includes(location.pathname);
   const { branding, ready } = useBranding();
 
+  // Keep the splash up for a minimum time so its animation is always seen,
+  // even when branding resolves instantly from cache.
+  const [minTimePassed, setMinTimePassed] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMinTimePassed(true), 1200);
+    return () => clearTimeout(t);
+  }, []);
+
   // White-label: set the browser tab title from the configured salon name.
   // index.html ships a static placeholder <title>; this overrides it at runtime
   // so every client sees their own name (and share previews) without a rebuild.
@@ -48,8 +56,9 @@ function Layout() {
     }
   }, [branding.salonName]);
 
-  // Hold the app behind a branded splash until branding first resolves.
-  if (!ready) return <BrandSplash />;
+  // Hold the app behind a branded splash until branding resolves AND the
+  // minimum splash time has elapsed.
+  if (!ready || !minTimePassed) return <BrandSplash />;
 
   return (
     <div className="min-h-screen bg-bg-dark">

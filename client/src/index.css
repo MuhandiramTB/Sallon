@@ -42,6 +42,13 @@
   .animate-pulse-soft { animation: pulseSoft 1.5s ease-in-out infinite; }
   .animate-toast-enter { animation: toastEnter 300ms ease-out; }
   .animate-float { animation: float 3s ease-in-out infinite; }
+  .animate-spin-slow { animation: spinSlow 1.4s linear infinite; }
+  .animate-spin-reverse { animation: spinReverse 2.4s linear infinite; }
+  .animate-ring-pulse { animation: ringPulse 1.8s ease-in-out infinite; }
+  .animate-shimmer-text {
+    background-size: 200% auto;
+    animation: shimmerText 2s linear infinite;
+  }
 
   .text-gradient {
     background: linear-gradient(135deg, #c9a96e 0%, #e8c97a 50%, #c9a96e 100%);
@@ -64,6 +71,12 @@
 @keyframes pulseSoft { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
 @keyframes toastEnter { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+@keyframes spinReverse { to { transform: rotate(-360deg); } }
+@keyframes ringPulse { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.04); } }
+@keyframes shimmerText {
+  to { background-position: 200% center; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
