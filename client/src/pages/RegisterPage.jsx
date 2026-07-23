@@ -30,7 +30,7 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [branding, setBranding] = useState({ salonName: 'SallonArt' });
+  const [branding, setBranding] = useState({ salonName: '' });
   const { login } = useAuth();
   const navigate = useNavigate();
 

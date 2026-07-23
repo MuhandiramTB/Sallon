@@ -50,7 +50,7 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [branding, setBranding] = useState({ salonName: 'Sallon', logoUrl: '' });
+  const [branding, setBranding] = useState({ salonName: '', logoUrl: '' });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {

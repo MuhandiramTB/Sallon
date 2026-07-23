@@ -10,7 +10,7 @@ const STEPS = [
 ];
 
 export default function HomePage() {
-  const [branding, setBranding] = useState({ salonName: 'SallonArt' });
+  const [branding, setBranding] = useState({ salonName: '' });
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -35,7 +35,7 @@ export default function HomePage() {
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-slide-up">
             Welcome to<br />
-            <span className="text-gradient">{branding.salonName}</span>
+            <span className="text-gradient">{branding.salonName || ' '}</span>
           </h1>
           <p className="text-base sm:text-lg text-white/70 mb-8 max-w-md mx-auto animate-slide-up">
             Your premium grooming experience. Book your appointment in seconds.

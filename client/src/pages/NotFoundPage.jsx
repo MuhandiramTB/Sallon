@@ -6,7 +6,7 @@ import { api } from '../lib/api.js';
 export default function NotFoundPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [branding, setBranding] = useState({ salonName: 'SallonArt' });
+  const [branding, setBranding] = useState({ salonName: '' });
 
   useEffect(() => {
     api('/config/branding').then((r) => setBranding(r.data)).catch(() => {});

@@ -4,7 +4,7 @@ import { api } from '../lib/api.js';
 
 export default function ForgotPasswordPage() {
   const [info, setInfo] = useState(null);
-  const [branding, setBranding] = useState({ salonName: 'SallonArt' });
+  const [branding, setBranding] = useState({ salonName: '' });
 
   useEffect(() => {
     api('/salon-info').then((r) => setInfo(r.data)).catch(() => {});
