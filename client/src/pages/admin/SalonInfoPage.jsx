@@ -6,7 +6,7 @@ import Card from '../../ui/Card.jsx';
 import Spinner from '../../ui/Spinner.jsx';
 
 const INITIAL = {
-  ownerName: '', salonName: '', logoUrl: '',
+  ownerName: '', salonName: '', logoUrl: '', galleryImages: [],
   phone: '', whatsapp: '', email: '', address: '',
   googleMapsUrl: '', facebookUrl: '', instagramUrl: '', bookingNote: '',
 };
@@ -102,6 +102,95 @@ function LogoUpload({ value, onChange }) {
         />
       </label>
       <p className="text-xs text-white/50 mt-1.5">PNG, JPG, or SVG. Max 200 KB. Square images look best.</p>
+      {error && <p className="text-red-400 text-xs mt-1.5">{error}</p>}
+    </div>
+  );
+}
+
+/** Homepage gallery: upload multiple images (base64), preview, remove, reorder. */
+function GalleryUpload({ value = [], onChange }) {
+  const [error, setError] = useState('');
+  const MAX_BYTES = 250 * 1024; // 250 KB per image
+  const MAX_IMAGES = 8;
+
+  const handleFiles = (fileList) => {
+    setError('');
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
+    if (value.length + files.length > MAX_IMAGES) {
+      setError(`Maximum ${MAX_IMAGES} images. You can add ${MAX_IMAGES - value.length} more.`);
+      return;
+    }
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) {
+        setError('Please pick image files only (PNG, JPG).');
+        return;
+      }
+      if (file.size > MAX_BYTES) {
+        setError(`"${file.name}" is too large (${Math.round(file.size / 1024)} KB). Max 250 KB each — please compress first.`);
+        return;
+      }
+    }
+    // Read all files, then append in order.
+    Promise.all(
+      files.map(
+        (file) =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          })
+      )
+    )
+      .then((dataUrls) => onChange([...value, ...dataUrls]))
+      .catch(() => setError('Could not read one of the files.'));
+  };
+
+  const removeAt = (idx) => onChange(value.filter((_, i) => i !== idx));
+  const move = (idx, dir) => {
+    const next = [...value];
+    const target = idx + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[idx], next[target]] = [next[target], next[idx]];
+    onChange(next);
+  };
+
+  return (
+    <div className="mb-4">
+      {value.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
+          {value.map((src, idx) => (
+            <div key={idx} className="relative group rounded-lg overflow-hidden border border-white/10 bg-white/5">
+              <img src={src} alt={`slide ${idx + 1}`} className="w-full h-24 object-cover" />
+              {idx === 0 && (
+                <span className="absolute top-1 left-1 text-[10px] font-medium bg-accent text-primary px-1.5 py-0.5 rounded">First slide</span>
+              )}
+              <div className="absolute inset-x-0 bottom-0 flex justify-between items-center bg-black/60 px-1.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1">
+                  <button type="button" onClick={() => move(idx, -1)} disabled={idx === 0}
+                    className="text-white/80 hover:text-white disabled:opacity-30 text-xs px-1" title="Move left">◀</button>
+                  <button type="button" onClick={() => move(idx, 1)} disabled={idx === value.length - 1}
+                    className="text-white/80 hover:text-white disabled:opacity-30 text-xs px-1" title="Move right">▶</button>
+                </div>
+                <button type="button" onClick={() => removeAt(idx)}
+                  className="text-red-400 hover:text-red-300 text-xs px-1" title="Remove">✕</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {value.length < MAX_IMAGES && (
+        <label className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent/30 transition-colors cursor-pointer min-h-[40px]">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          {value.length ? 'Add More Images' : 'Upload Images'}
+          <input type="file" accept="image/*" multiple onChange={(e) => handleFiles(e.target.files)} className="hidden" />
+        </label>
+      )}
+      <p className="text-xs text-white/50 mt-1.5">
+        Up to {MAX_IMAGES} photos, max 250 KB each. Landscape (wide) images look best. The first image shows first; drag order with ◀ ▶.
+      </p>
       {error && <p className="text-red-400 text-xs mt-1.5">{error}</p>}
     </div>
   );
@@ -210,6 +299,17 @@ export default function SalonInfoPage() {
           <p className="text-xs text-white/60 mb-4">The salon name and logo shown throughout the app (navbar, login page, WhatsApp messages).</p>
           <Input label="Salon Name (displayed on app)" value={form.salonName} onChange={handleChange('salonName')} placeholder="e.g. SallonArt Men's Salon" />
           <LogoUpload value={form.logoUrl} onChange={(val) => setForm((f) => ({ ...f, logoUrl: val }))} />
+        </Card>
+
+        <Card className="mb-5">
+          <h3 className="font-semibold text-white mb-2">Homepage Gallery</h3>
+          <p className="text-xs text-white/60 mb-4">
+            Photos of your salon shown as a rotating slideshow on the home page. Add a few of your best shots — interior, styling, results.
+          </p>
+          <GalleryUpload
+            value={form.galleryImages}
+            onChange={(imgs) => setForm((f) => ({ ...f, galleryImages: imgs }))}
+          />
         </Card>
 
         <Card className="mb-5">

@@ -130,6 +130,12 @@ ALTER TABLE salon_info ADD COLUMN IF NOT EXISTS salon_name TEXT DEFAULT '';
 ALTER TABLE salon_info ADD COLUMN IF NOT EXISTS logo_url TEXT DEFAULT '';
 `
   },
+  {
+    name: '007-homepage-gallery.sql',
+    sql: `
+ALTER TABLE salon_info ADD COLUMN IF NOT EXISTS gallery_images TEXT DEFAULT '[]';
+`
+  },
 ];
 
 export const SQLITE_MIGRATIONS = [
@@ -262,6 +268,12 @@ VALUES (1, 'For any booking changes or cancellations, please WhatsApp or call us
     sql: `
 ALTER TABLE salon_info ADD COLUMN salon_name TEXT DEFAULT '';
 ALTER TABLE salon_info ADD COLUMN logo_url TEXT DEFAULT '';
+`
+  },
+  {
+    name: '007-homepage-gallery.sql',
+    sql: `
+ALTER TABLE salon_info ADD COLUMN gallery_images TEXT DEFAULT '[]';
 `
   },
 ];
