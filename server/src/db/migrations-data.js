@@ -136,6 +136,12 @@ ALTER TABLE salon_info ADD COLUMN IF NOT EXISTS logo_url TEXT DEFAULT '';
 ALTER TABLE salon_info ADD COLUMN IF NOT EXISTS gallery_images TEXT DEFAULT '[]';
 `
   },
+  {
+    name: '008-service-image.sql',
+    sql: `
+ALTER TABLE services ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT '';
+`
+  },
 ];
 
 export const SQLITE_MIGRATIONS = [
@@ -274,6 +280,12 @@ ALTER TABLE salon_info ADD COLUMN logo_url TEXT DEFAULT '';
     name: '007-homepage-gallery.sql',
     sql: `
 ALTER TABLE salon_info ADD COLUMN gallery_images TEXT DEFAULT '[]';
+`
+  },
+  {
+    name: '008-service-image.sql',
+    sql: `
+ALTER TABLE services ADD COLUMN image_url TEXT DEFAULT '';
 `
   },
 ];

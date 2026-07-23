@@ -50,8 +50,10 @@ export default function ServicesPage() {
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((svc) => (
-            <ServiceCard key={svc.id} service={svc} />
+          {filtered.map((svc, i) => (
+            <div key={svc.id} style={{ animationDelay: `${Math.min(i, 8) * 60}ms` }} className="animate-fade-in">
+              <ServiceCard service={svc} />
+            </div>
           ))}
         </div>
       )}

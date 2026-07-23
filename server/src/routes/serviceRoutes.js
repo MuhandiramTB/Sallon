@@ -9,6 +9,7 @@ const router = Router();
 
 const SERVICE_SELECT = `
   SELECT s.id, s.category_id as categoryId, s.name, s.description,
+         s.image_url as imageUrl,
          s.duration_minutes as durationMinutes, s.price, s.is_active as isActive,
          s.is_package as isPackage, c.name as categoryName
   FROM services s
@@ -57,15 +58,15 @@ router.get('/:id', async (req, res, next) => {
 // POST /api/v1/services — admin
 router.post('/', authMiddleware, adminMiddleware, validate(createServiceSchema), async (req, res, next) => {
   try {
-    const { categoryId, name, description, durationMinutes, price, isPackage, packageServiceIds } = req.validatedBody;
+    const { categoryId, name, description, imageUrl, durationMinutes, price, isPackage, packageServiceIds } = req.validatedBody;
 
     const category = await db.prepare('SELECT id FROM categories WHERE id = ?').get(categoryId);
     if (!category) return res.status(400).json({ error: 'Category not found' });
 
     const cleanDesc = (description && description.trim() && description.trim() !== '0') ? description.trim() : null;
     const result = await db.prepare(
-      'INSERT INTO services (category_id, name, description, duration_minutes, price, is_package) VALUES (?, ?, ?, ?, ?, ?)'
-    ).run(categoryId, name, cleanDesc, durationMinutes, price, isPackage ? 1 : 0);
+      'INSERT INTO services (category_id, name, description, image_url, duration_minutes, price, is_package) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).run(categoryId, name, cleanDesc, imageUrl || '', durationMinutes, price, isPackage ? 1 : 0);
 
     // Add package items if this is a package
     if (isPackage && packageServiceIds?.length) {
@@ -89,13 +90,14 @@ router.put('/:id', authMiddleware, adminMiddleware, validate(updateServiceSchema
     const existing = await db.prepare('SELECT * FROM services WHERE id = ?').get(id);
     if (!existing) return res.status(404).json({ error: 'Service not found' });
 
-    const { categoryId, name, description, durationMinutes, price, isActive, isPackage, packageServiceIds } = req.validatedBody;
+    const { categoryId, name, description, imageUrl, durationMinutes, price, isActive, isPackage, packageServiceIds } = req.validatedBody;
 
     await db.prepare(`
       UPDATE services SET
         category_id = COALESCE(?, category_id),
         name = COALESCE(?, name),
         description = COALESCE(?, description),
+        image_url = COALESCE(?, image_url),
         duration_minutes = COALESCE(?, duration_minutes),
         price = COALESCE(?, price),
         is_active = COALESCE(?, is_active),
@@ -103,6 +105,7 @@ router.put('/:id', authMiddleware, adminMiddleware, validate(updateServiceSchema
       WHERE id = ?
     `).run(
       categoryId ?? null, name ?? null, description ?? null,
+      imageUrl ?? null,
       durationMinutes ?? null, price ?? null,
       isActive !== undefined ? (isActive ? 1 : 0) : null,
       isPackage !== undefined ? (isPackage ? 1 : 0) : null, id

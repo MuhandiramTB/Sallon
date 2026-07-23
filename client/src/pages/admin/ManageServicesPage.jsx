@@ -16,7 +16,8 @@ export default function ManageServicesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState(null);
-  const [form, setForm] = useState({ categoryId: '', name: '', description: '', durationMinutes: 30, price: 0, isPackage: false, packageServiceIds: [] });
+  const [form, setForm] = useState({ categoryId: '', name: '', description: '', imageUrl: '', durationMinutes: 30, price: 0, isPackage: false, packageServiceIds: [] });
+  const [imageError, setImageError] = useState('');
   const [error, setError] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -37,19 +38,39 @@ export default function ManageServicesPage() {
 
   const openCreate = (isPackage = false) => {
     setEditingService(null);
-    setForm({ categoryId: categories[0]?.id || '', name: '', description: '', durationMinutes: 30, price: 0, isPackage, packageServiceIds: [] });
+    setImageError('');
+    setForm({ categoryId: categories[0]?.id || '', name: '', description: '', imageUrl: '', durationMinutes: 30, price: 0, isPackage, packageServiceIds: [] });
     setShowModal(true);
   };
 
   const openEdit = (svc) => {
     setEditingService(svc);
+    setImageError('');
     setForm({
       categoryId: svc.categoryId, name: svc.name, description: svc.description || '',
+      imageUrl: svc.imageUrl || '',
       durationMinutes: svc.durationMinutes, price: svc.price,
       isPackage: !!svc.isPackage,
       packageServiceIds: svc.packageItems?.map((i) => i.id) || [],
     });
     setShowModal(true);
+  };
+
+  const handleImageFile = (file) => {
+    setImageError('');
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setImageError('Please pick an image file (PNG, JPG).');
+      return;
+    }
+    if (file.size > 250 * 1024) {
+      setImageError(`Image is too large (${Math.round(file.size / 1024)} KB). Max 250 KB — please compress first.`);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => setForm((f) => ({ ...f, imageUrl: e.target.result }));
+    reader.onerror = () => setImageError('Could not read the file.');
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -117,6 +138,11 @@ export default function ManageServicesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {services.map((svc) => (
             <Card key={svc.id} className={`py-4 transition-opacity ${!svc.isActive ? 'opacity-50' : ''}`}>
+              {svc.imageUrl && (
+                <div className="rounded-lg overflow-hidden border border-white/10 mb-3 -mt-1">
+                  <img src={svc.imageUrl} alt={svc.name} className="w-full h-24 object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                </div>
+              )}
               <div className="flex items-start justify-between mb-2 gap-2">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-white truncate">{svc.name || 'Unnamed Service'}</h3>
@@ -167,6 +193,25 @@ export default function ManageServicesPage() {
           </Select>
           <Input label={form.isPackage ? 'Package Name' : 'Service Name'} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={form.isPackage ? 'e.g. Groom Package' : 'e.g. Haircut'} required />
           <Input label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder={form.isPackage ? 'e.g. Haircut + Beard Trim + Cleanup' : 'Optional description'} />
+
+          {/* Service image */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-white/70 mb-1.5">Service Image</label>
+            {form.imageUrl && (
+              <div className="relative mb-2 rounded-lg overflow-hidden border border-white/10">
+                <img src={form.imageUrl} alt="service" className="w-full h-32 object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                <button type="button" onClick={() => setForm((f) => ({ ...f, imageUrl: '' }))}
+                  className="absolute top-2 right-2 text-xs bg-black/60 text-red-300 hover:text-red-200 px-2 py-1 rounded">Remove</button>
+              </div>
+            )}
+            <label className="inline-flex items-center gap-2 bg-accent/20 text-accent px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent/30 transition-colors cursor-pointer min-h-[40px]">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              {form.imageUrl ? 'Replace Image' : 'Upload Image'}
+              <input type="file" accept="image/*" onChange={(e) => handleImageFile(e.target.files?.[0])} className="hidden" />
+            </label>
+            <p className="text-xs text-white/50 mt-1.5">PNG or JPG, max 250 KB. Wide (landscape) images look best on cards.</p>
+            {imageError && <p className="text-red-400 text-xs mt-1.5">{imageError}</p>}
+          </div>
 
           {form.isPackage && regularServices.length > 0 && (
             <div className="mb-4">

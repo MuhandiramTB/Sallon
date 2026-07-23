@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { BrandingProvider, useBranding } from './context/BrandingContext.jsx';
 import BrandSplash from './components/BrandSplash.jsx';
+import WhatsAppFab from './components/WhatsAppFab.jsx';
 import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
@@ -87,6 +88,7 @@ function Layout() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
+      {!location.pathname.startsWith('/admin') && <WhatsAppFab />}
       <ServerWakingOverlay />
       <RateLimitOverlay />
     </div>
