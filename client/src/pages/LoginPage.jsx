@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useBranding } from '../context/BrandingContext.jsx';
 import { api } from '../lib/api.js';
 import Button from '../ui/Button.jsx';
+import AuthLayout from '../components/AuthLayout.jsx';
 
 // Inline password field matching LoginPage's custom styling (rounded-xl, min-h-48).
 function PasswordField({ className = '', ...props }) {
@@ -36,7 +36,6 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { branding } = useBranding();
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -61,76 +60,51 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[90vh] flex items-center justify-center bg-gradient-hero relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute inset-0 opacity-15 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-accent rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-60 h-60 bg-accent rounded-full blur-[80px]" />
-      </div>
-
-      <div className="relative z-10 w-full max-w-md px-4 animate-scale-in">
-        {/* Logo & brand */}
-        <div className="text-center mb-8">
-          {branding.logoUrl ? (
-            <img
-              src={branding.logoUrl}
-              alt={branding.salonName}
-              className="w-20 h-20 rounded-full object-cover border-2 border-accent/50 bg-white/10 mx-auto mb-4 shadow-lg shadow-accent/30"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
-            />
-          ) : (
-            <div className="w-20 h-20 bg-gradient-gold rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-accent/30 border-2 border-accent/50">
-              <span className="text-3xl font-bold text-primary">{branding.salonName?.charAt(0).toUpperCase() || 'S'}</span>
-            </div>
-          )}
-          <h1 className="text-2xl font-bold text-white">{branding.salonName}</h1>
-          <p className="text-white/60 text-sm mt-1">Sign in to your account</p>
-        </div>
-
-        {/* Form card */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
-          {serverError && (
-            <div className="bg-error/10 border border-error/20 text-red-300 p-3.5 rounded-xl mb-5 text-sm font-medium animate-slide-up">
-              {serverError}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-white/70 mb-1.5">Email</label>
-              <input
-                name="email" type="email" value={form.email} onChange={handleChange} required
-                placeholder="your@email.com"
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/25 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/50 transition-all min-h-[48px]"
-              />
-              {errors.email && <p className="text-red-400 text-xs mt-1.5">{errors.email}</p>}
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-medium text-white/70">Password</label>
-                <Link to="/forgot-password" className="text-xs text-accent hover:text-accent-hover transition-colors">
-                  Forgot password?
-                </Link>
-              </div>
-              <PasswordField
-                name="password" value={form.password} onChange={handleChange} required
-                placeholder="Enter your password"
-              />
-              {errors.password && <p className="text-red-400 text-xs mt-1.5">{errors.password}</p>}
-            </div>
-
-            <Button type="submit" isLoading={isSubmitting} className="w-full !min-h-[50px] text-base">
-              {isSubmitting ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
-        </div>
-
-        <p className="text-center text-sm text-white/60 mt-6">
+    <AuthLayout
+      title="Welcome back"
+      subtitle="Sign in to book your next appointment"
+      footer={
+        <>
           Don't have an account?{' '}
           <Link to="/register" className="text-accent font-semibold hover:text-accent-hover transition-colors">Create one</Link>
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      {serverError && (
+        <div className="bg-error/10 border border-error/20 text-red-300 p-3.5 rounded-xl mb-5 text-sm font-medium animate-slide-up">
+          {serverError}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="block text-sm font-medium text-white/70 mb-1.5">Email</label>
+          <input
+            name="email" type="email" value={form.email} onChange={handleChange} required
+            placeholder="your@email.com"
+            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/25 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/50 transition-all min-h-[48px]"
+          />
+          {errors.email && <p className="text-red-400 text-xs mt-1.5">{errors.email}</p>}
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-sm font-medium text-white/70">Password</label>
+            <Link to="/forgot-password" className="text-xs text-accent hover:text-accent-hover transition-colors">
+              Forgot password?
+            </Link>
+          </div>
+          <PasswordField
+            name="password" value={form.password} onChange={handleChange} required
+            placeholder="Enter your password"
+          />
+          {errors.password && <p className="text-red-400 text-xs mt-1.5">{errors.password}</p>}
+        </div>
+
+        <Button type="submit" isLoading={isSubmitting} className="w-full !min-h-[50px] text-base">
+          {isSubmitting ? 'Signing in...' : 'Sign In'}
+        </Button>
+      </form>
+    </AuthLayout>
   );
 }
