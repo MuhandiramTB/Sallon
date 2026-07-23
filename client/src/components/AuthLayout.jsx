@@ -76,24 +76,25 @@ export default function AuthLayout({ title, subtitle, children, footer }) {
           <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-accent rounded-full blur-[100px]" />
         </div>
 
-        <div className="relative z-10 w-full max-w-md px-4 py-6 lg:py-10 animate-scale-in">
-          {/* Compact brand header (mobile only) — logo + name in one tight block */}
-          <div className="lg:hidden flex flex-col items-center text-center mb-4">
-            <Logo size="w-16 h-16 mb-2" />
-            <h1 className="text-lg font-bold text-white leading-tight">{branding.salonName || ' '}</h1>
+        <div className="relative z-10 w-full max-w-sm lg:max-w-md px-6 py-6 lg:py-10 animate-scale-in">
+          {/* Logo only (mobile) — brand name/title hidden to keep it clean & compact */}
+          <div className="lg:hidden flex justify-center mb-6">
+            <Logo size="w-16 h-16" />
           </div>
 
-          {/* Page title */}
-          <div className="mb-4 lg:mb-6 text-center lg:text-left">
-            <h1 className="text-xl lg:text-2xl font-bold text-white">{title}</h1>
-            {subtitle && <p className="text-white/60 text-xs lg:text-sm mt-1">{subtitle}</p>}
+          {/* Page title — desktop only (mobile keeps it minimal) */}
+          <div className="hidden lg:block mb-6 text-left">
+            <h1 className="text-2xl font-bold text-white">{title}</h1>
+            {subtitle && <p className="text-white/60 text-sm mt-1">{subtitle}</p>}
           </div>
 
-          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 sm:p-7 lg:p-8 shadow-2xl">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 lg:p-8 shadow-2xl">
+            {/* Compact title inside the card (mobile only) */}
+            <h2 className="lg:hidden text-lg font-bold text-white text-center mb-5">{title}</h2>
             {children}
           </div>
 
-          {footer && <div className="text-center text-sm text-white/60 mt-4 lg:mt-6">{footer}</div>}
+          {footer && <div className="text-center text-sm text-white/60 mt-5 lg:mt-6">{footer}</div>}
         </div>
       </div>
     </div>

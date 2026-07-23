@@ -27,7 +27,7 @@ function PasswordField({ fieldClass = '', ...props }) {
 }
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '07', password: '' });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,8 +40,25 @@ export default function RegisterPage() {
     setServerError('');
   };
 
+  // Sri Lankan mobile: always starts "07", digits only, exactly 10 digits max.
+  const handlePhoneChange = (e) => {
+    let digits = e.target.value.replace(/\D/g, '');   // strip non-digits
+    if (!digits.startsWith('07')) {
+      // Keep a leading 0, coerce toward the 07 prefix as the user types.
+      digits = '07' + digits.replace(/^0+/, '').replace(/^7/, '');
+    }
+    digits = digits.slice(0, 10);                     // block beyond 10 digits
+    setForm((f) => ({ ...f, phone: digits }));
+    setErrors((prev) => ({ ...prev, phone: '' }));
+    setServerError('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!/^07\d{8}$/.test(form.phone)) {
+      setErrors((prev) => ({ ...prev, phone: 'Enter a valid 10-digit mobile starting with 07.' }));
+      return;
+    }
     setIsSubmitting(true);
     setServerError('');
     try {
@@ -84,7 +101,18 @@ export default function RegisterPage() {
         </div>
         <div>
           <label className="block text-xs font-medium text-white/60 mb-1">Mobile Number</label>
-          <input name="phone" type="tel" value={form.phone} onChange={handleChange} required placeholder="07X XXX XXXX" className={inputClass('phone')} />
+          <input
+            name="phone"
+            type="tel"
+            inputMode="numeric"
+            value={form.phone}
+            onChange={handlePhoneChange}
+            required
+            maxLength={10}
+            placeholder="07X XXX XXXX"
+            className={inputClass('phone')}
+          />
+          <p className="text-white/40 text-[11px] mt-1">{form.phone.length}/10 digits</p>
           {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
         </div>
         <div>
