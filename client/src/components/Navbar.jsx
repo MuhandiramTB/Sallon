@@ -99,12 +99,17 @@ export default function Navbar() {
     <>
       <header className="bg-primary text-white shadow-lg sticky top-0 z-40">
         <div className="container mx-auto px-4 py-2.5 flex items-center justify-between">
-          {/* Logo */}
-          <Link to={user?.role === 'admin' ? '/admin' : '/'} className="flex items-center gap-2.5 hover:opacity-90 transition-opacity flex-shrink-0">
+          {/* Logo (icon only) — links to dashboard for admin, landing for everyone else */}
+          <Link
+            to={user?.role === 'admin' ? '/admin' : '/'}
+            aria-label={branding.salonName || 'Home'}
+            title={branding.salonName || 'Home'}
+            className="flex items-center hover:opacity-90 transition-opacity flex-shrink-0"
+          >
             {branding.logoUrl ? (
               <img
                 src={branding.logoUrl}
-                alt=""
+                alt={branding.salonName || 'Home'}
                 className="w-10 h-10 rounded-full object-cover border-2 border-accent/40 bg-white/10 shadow-md shadow-accent/20"
                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
@@ -113,7 +118,6 @@ export default function Navbar() {
                 {branding.salonName?.charAt(0).toUpperCase() || 'S'}
               </div>
             )}
-            <span className="text-xl font-bold tracking-tight">{branding.salonName}</span>
           </Link>
 
           {/* Desktop Nav */}

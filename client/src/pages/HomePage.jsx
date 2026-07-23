@@ -66,8 +66,19 @@ export default function HomePage() {
             <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
             Now accepting online bookings
           </div>
+
+          {/* Logo on top of the hero */}
+          {branding.logoUrl && (
+            <img
+              src={branding.logoUrl}
+              alt={branding.salonName || ''}
+              className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-accent/50 bg-white/10 shadow-xl shadow-accent/20 mx-auto mb-5 animate-scale-in"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          )}
+
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-slide-up drop-shadow-lg">
-            Welcome to<br />
+            <span className="block text-2xl sm:text-3xl font-medium text-white/80 mb-1">Welcome to</span>
             <span className="text-gradient">{branding.salonName || ' '}</span>
           </h1>
           <p className="text-base sm:text-lg text-white/80 mb-8 max-w-md mx-auto animate-slide-up drop-shadow">
