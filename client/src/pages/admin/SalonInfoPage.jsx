@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../lib/api.js';
+import { useBranding } from '../../context/BrandingContext.jsx';
 import Button from '../../ui/Button.jsx';
 import Input from '../../ui/Input.jsx';
 import Card from '../../ui/Card.jsx';
@@ -243,6 +244,7 @@ function PhoneInput({ label, value, onChange, placeholder, showWaTest = false })
 }
 
 export default function SalonInfoPage() {
+  const { refresh: refreshBranding } = useBranding();
   const [form, setForm] = useState(INITIAL);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -267,6 +269,7 @@ export default function SalonInfoPage() {
     setMessage('');
     try {
       await api('/salon-info', { method: 'PUT', body: form });
+      await refreshBranding(); // update navbar/hero/tab title live, no reload needed
       setMessage('Saved successfully!');
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { api } from '../lib/api.js';
 
 const BrandingContext = createContext(null);
@@ -28,36 +28,36 @@ export function BrandingProvider({ children }) {
   // "ready" = we have something real to show (a cache hit, or the API has answered).
   const [ready, setReady] = useState(!!cached);
 
-  useEffect(() => {
-    let alive = true;
-    api('/config/branding')
-      .then((res) => {
-        if (!alive || !res?.data) return;
-        const next = {
-          ...EMPTY,
-          ...res.data,
-          galleryImages: Array.isArray(res.data.galleryImages) ? res.data.galleryImages : [],
-        };
-        setBranding(next);
-        try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify(next));
-        } catch {
-          /* storage full / disabled — non-fatal */
-        }
-      })
-      .catch(() => {
-        /* offline / cold start — keep cached values if any */
-      })
-      .finally(() => {
-        if (alive) setReady(true);
-      });
-    return () => {
-      alive = false;
-    };
+  // Fetch fresh branding and update both state and cache. Call after an admin
+  // edits Salon Info so changes appear immediately (no reload / signout needed).
+  const refresh = useCallback(async () => {
+    try {
+      const res = await api('/config/branding');
+      if (!res?.data) return;
+      const next = {
+        ...EMPTY,
+        ...res.data,
+        galleryImages: Array.isArray(res.data.galleryImages) ? res.data.galleryImages : [],
+      };
+      setBranding(next);
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(next));
+      } catch {
+        /* storage full / disabled — non-fatal */
+      }
+    } catch {
+      /* offline / cold start — keep cached values if any */
+    } finally {
+      setReady(true);
+    }
   }, []);
 
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
   return (
-    <BrandingContext.Provider value={{ branding, ready }}>
+    <BrandingContext.Provider value={{ branding, ready, refresh }}>
       {children}
     </BrandingContext.Provider>
   );

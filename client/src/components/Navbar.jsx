@@ -11,6 +11,9 @@ const icons = {
   more: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
   ),
+  signin: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+  ),
   services: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
   ),
@@ -115,10 +118,20 @@ export default function Navbar() {
         { to: user ? '/my-bookings' : '/login', label: 'Bookings', icon: icons.myBookings },
       ];
 
-  // Everything else lives in the right-side "More" drawer.
+  // The "More" drawer shows the FULL navigation set (with icons) so users have
+  // one complete menu. Admins also get a "View Site" link to preview the public
+  // landing page without signing out.
   const drawerLinks = user?.role === 'admin'
-    ? adminLinks.filter((l) => !bottomBarLinks.some((b) => b.to === l.to))
-    : [{ to: '/contact', label: 'Contact', icon: icons.contact }];
+    ? [
+        ...adminLinks,
+        { to: '/', label: 'View Site', icon: icons.home },
+      ]
+    : [
+        { to: '/', label: 'Home', icon: icons.home },
+        { to: '/services', label: 'Services', icon: icons.services },
+        { to: user ? '/my-bookings' : '/login', label: 'My Bookings', icon: icons.myBookings },
+        { to: '/contact', label: 'Contact', icon: icons.contact },
+      ];
 
   return (
     <>
@@ -175,8 +188,9 @@ export default function Navbar() {
               <div className="flex items-center ml-2">
                 <Link
                   to="/login"
-                  className="text-sm font-semibold bg-gradient-gold text-primary px-5 py-2 rounded-lg hover:shadow-lg hover:shadow-accent/20 transition-all min-h-[44px] flex items-center active:scale-[0.97]"
+                  className="text-sm font-semibold bg-gradient-gold text-primary px-5 py-2 rounded-lg hover:shadow-lg hover:shadow-accent/20 transition-all min-h-[44px] flex items-center gap-2 active:scale-[0.97]"
                 >
+                  {icons.signin}
                   Sign In
                 </Link>
               </div>
@@ -196,8 +210,9 @@ export default function Navbar() {
             ) : (
               <Link
                 to="/login"
-                className="text-sm font-semibold bg-gradient-gold text-primary px-4 py-2 rounded-lg active:scale-[0.97] transition-transform"
+                className="text-sm font-semibold bg-gradient-gold text-primary px-4 py-2 rounded-lg active:scale-[0.97] transition-transform flex items-center gap-1.5"
               >
+                {icons.signin}
                 Sign In
               </Link>
             )}
@@ -303,6 +318,7 @@ export default function Navbar() {
                 </>
               ) : (
                 <Link to="/login" className="flex items-center justify-center gap-2 mx-1 mt-1 py-3 rounded-xl text-sm font-bold bg-gradient-gold text-primary min-h-[48px]">
+                  {icons.signin}
                   Sign In
                 </Link>
               )}
