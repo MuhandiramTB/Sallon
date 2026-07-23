@@ -5,6 +5,12 @@ import { useBranding } from '../context/BrandingContext.jsx';
 
 // SVG Icons as components
 const icons = {
+  home: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+  ),
+  more: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+  ),
   services: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
   ),
@@ -95,6 +101,25 @@ export default function Navbar() {
 
   const links = user?.role === 'admin' ? adminLinks : customerLinks;
 
+  // Mobile bottom bar: a few primary destinations + a "More" button.
+  // Customers get Home/Services/Bookings; admins get Dashboard/Quick Book/Bookings.
+  const bottomBarLinks = user?.role === 'admin'
+    ? [
+        { to: '/admin', label: 'Home', icon: icons.dashboard },
+        { to: '/admin/quick-booking', label: 'Book', icon: icons.quickBook },
+        { to: '/admin/bookings', label: 'Bookings', icon: icons.bookings },
+      ]
+    : [
+        { to: '/', label: 'Home', icon: icons.home },
+        { to: '/services', label: 'Services', icon: icons.services },
+        { to: user ? '/my-bookings' : '/login', label: 'Bookings', icon: icons.myBookings },
+      ];
+
+  // Everything else lives in the right-side "More" drawer.
+  const drawerLinks = user?.role === 'admin'
+    ? adminLinks.filter((l) => !bottomBarLinks.some((b) => b.to === l.to))
+    : [{ to: '/contact', label: 'Contact', icon: icons.contact }];
+
   return (
     <>
       <header className="bg-primary text-white shadow-lg sticky top-0 z-40">
@@ -158,73 +183,133 @@ export default function Navbar() {
             )}
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-white min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-            aria-label="Menu"
-          >
-            {mobileMenuOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          {/* Mobile: quick access to profile / sign-in in the top bar */}
+          <div className="md:hidden flex items-center">
+            {user ? (
+              <Link
+                to="/profile"
+                aria-label="My profile"
+                className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold text-white hover:bg-white/30 transition-colors"
+              >
+                {user.name.charAt(0).toUpperCase()}
+              </Link>
             ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+              <Link
+                to="/login"
+                className="text-sm font-semibold bg-gradient-gold text-primary px-4 py-2 rounded-lg active:scale-[0.97] transition-transform"
+              >
+                Sign In
+              </Link>
             )}
-          </button>
+          </div>
         </div>
       </header>
 
-      {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-[57px] z-30 animate-fade-in">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileMenuOpen(false)} />
-          <div className="relative bg-primary shadow-xl animate-slide-up">
-            <nav className="container mx-auto px-4 py-3 flex flex-col gap-1">
-              {links.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all min-h-[48px] ${
-                    isActive(link.to) ? 'bg-accent/20 text-accent' : 'text-white/70 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  {link.icon}
-                  {link.label}
-                </Link>
-              ))}
-
-              <div className="border-t border-white/20 mt-2 pt-2">
-                {user ? (
-                  <>
-                    <Link
-                      to="/profile"
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all min-h-[48px] ${
-                        isActive('/profile') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'
-                      }`}
-                    >
-                      <div className="w-7 h-7 rounded-full bg-white/25 flex items-center justify-center text-xs font-bold">
-                        {user.name.charAt(0).toUpperCase()}
-                      </div>
-                      My Profile
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 transition-all min-h-[48px]"
-                    >
-                      {icons.logout}
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <Link to="/login" className="flex items-center justify-center gap-2 mx-4 mt-2 py-3 rounded-xl text-sm font-bold bg-gradient-gold text-primary min-h-[48px]">
-                    Sign In
-                  </Link>
-                )}
-              </div>
-            </nav>
-          </div>
+      {/* Mobile bottom navigation bar */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-primary/95 backdrop-blur-lg border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
+        <div className="flex items-stretch justify-around">
+          {bottomBarLinks.map((link) => {
+            const active = isActive(link.to);
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`flex flex-col items-center justify-center gap-1 flex-1 py-2.5 min-h-[56px] transition-colors ${
+                  active ? 'text-accent' : 'text-white/55 hover:text-white'
+                }`}
+              >
+                <span className={`transition-transform ${active ? 'scale-110' : ''}`}>{link.icon}</span>
+                <span className="text-[10px] font-medium leading-none">{link.label}</span>
+              </Link>
+            );
+          })}
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 py-2.5 min-h-[56px] transition-colors ${
+              mobileMenuOpen ? 'text-accent' : 'text-white/55 hover:text-white'
+            }`}
+            aria-label="More options"
+          >
+            <span>{icons.more}</span>
+            <span className="text-[10px] font-medium leading-none">More</span>
+          </button>
         </div>
-      )}
+      </nav>
 
+      {/* Right-side slide-in drawer (opened by "More") */}
+      <div
+        className={`md:hidden fixed inset-0 z-50 ${mobileMenuOpen ? '' : 'pointer-events-none'}`}
+        aria-hidden={!mobileMenuOpen}
+      >
+        {/* Backdrop */}
+        <div
+          className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
+            mobileMenuOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+        {/* Panel */}
+        <div
+          className={`absolute top-0 right-0 h-full w-72 max-w-[80%] bg-primary shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
+            mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+            <span className="font-semibold text-white">{branding.salonName || 'Menu'}</span>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-9 h-9 flex items-center justify-center rounded-lg text-white/70 hover:bg-white/10"
+              aria-label="Close menu"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+
+          <nav className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1">
+            {drawerLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all min-h-[48px] ${
+                  isActive(link.to) ? 'bg-accent/20 text-accent' : 'text-white/70 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                {link.icon}
+                {link.label}
+              </Link>
+            ))}
+
+            <div className="border-t border-white/10 mt-2 pt-2">
+              {user ? (
+                <>
+                  <Link
+                    to="/profile"
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all min-h-[48px] ${
+                      isActive('/profile') ? 'bg-white/20 text-white' : 'text-white/80 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="w-7 h-7 rounded-full bg-white/25 flex items-center justify-center text-xs font-bold">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    My Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 transition-all min-h-[48px]"
+                  >
+                    {icons.logout}
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link to="/login" className="flex items-center justify-center gap-2 mx-1 mt-1 py-3 rounded-xl text-sm font-bold bg-gradient-gold text-primary min-h-[48px]">
+                  Sign In
+                </Link>
+              )}
+            </div>
+          </nav>
+        </div>
+      </div>
     </>
   );
 }

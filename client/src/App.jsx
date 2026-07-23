@@ -65,7 +65,7 @@ function Layout() {
     <div className="min-h-screen bg-bg-dark">
       <OfflineBanner />
       <Navbar />
-      <div className={isFullBleed ? '' : 'container mx-auto p-4 pb-8'}>
+      <div className={isFullBleed ? 'pb-16 md:pb-0' : 'container mx-auto p-4 pb-24 md:pb-8'}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />

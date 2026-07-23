@@ -110,7 +110,7 @@ export default function HomePage() {
       </div>
 
       {/* Bottom: How it works */}
-      <div className="relative z-10 pb-8">
+      <div className="relative z-10 pb-24 md:pb-8">
         <div className="flex justify-center gap-8 sm:gap-16 px-4">
           {STEPS.map((step, i) => (
             <div key={i} className="text-center animate-fade-in" style={{ animationDelay: `${i * 150}ms` }}>

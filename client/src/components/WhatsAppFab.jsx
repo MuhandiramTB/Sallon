@@ -25,7 +25,7 @@ export default function WhatsAppFab() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contact us on WhatsApp"
-      className="group fixed bottom-5 right-5 z-40 flex items-center gap-2"
+      className="group fixed bottom-20 right-5 md:bottom-5 z-40 flex items-center gap-2"
     >
       <span className="relative flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] shadow-lg shadow-black/30 transition-transform active:scale-95 group-hover:scale-105">
         {/* Pulsing ring to draw attention */}
