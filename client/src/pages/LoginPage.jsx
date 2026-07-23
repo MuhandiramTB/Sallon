@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useBranding } from '../context/BrandingContext.jsx';
 import { api } from '../lib/api.js';
 import Button from '../ui/Button.jsx';
 
@@ -35,11 +36,9 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [branding, setBranding] = useState({ salonName: '' });
+  const { branding } = useBranding();
   const { login } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => { api('/config/branding').then((r) => setBranding(r.data)).catch(() => {}); }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

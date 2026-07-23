@@ -1,16 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { api } from '../lib/api.js';
+import { useBranding } from '../context/BrandingContext.jsx';
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [branding, setBranding] = useState({ salonName: '' });
-
-  useEffect(() => {
-    api('/config/branding').then((r) => setBranding(r.data)).catch(() => {});
-  }, []);
+  const { branding } = useBranding();
 
   const homeRoute = user?.role === 'admin' ? '/admin' : '/';
 

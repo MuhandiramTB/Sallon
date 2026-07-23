@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { api } from '../lib/api.js';
+import { useBranding } from '../context/BrandingContext.jsx';
 
 // SVG Icons as components
 const icons = {
@@ -50,12 +50,8 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [branding, setBranding] = useState({ salonName: '', logoUrl: '' });
+  const { branding } = useBranding();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    api('/config/branding').then((res) => setBranding(res.data)).catch(() => {});
-  }, []);
 
   useEffect(() => { setMobileMenuOpen(false); }, [location.pathname]);
 

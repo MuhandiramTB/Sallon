@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
-import { api } from './lib/api.js';
+import { BrandingProvider, useBranding } from './context/BrandingContext.jsx';
+import BrandSplash from './components/BrandSplash.jsx';
 import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
@@ -33,22 +34,22 @@ const NO_NAVBAR = []; // Add paths here if we ever need to hide navbar
 function Layout() {
   const location = useLocation();
   const isFullBleed = FULL_BLEED.includes(location.pathname);
+  const { branding, ready } = useBranding();
 
   // White-label: set the browser tab title from the configured salon name.
   // index.html ships a static placeholder <title>; this overrides it at runtime
   // so every client sees their own name (and share previews) without a rebuild.
   useEffect(() => {
-    api('/config/branding')
-      .then((res) => {
-        const name = res?.data?.salonName?.trim();
-        if (name) {
-          document.title = `${name} — Book Your Appointment`;
-          const og = document.querySelector('meta[property="og:title"]');
-          if (og) og.setAttribute('content', `${name} — Book Your Appointment`);
-        }
-      })
-      .catch(() => {});
-  }, []);
+    const name = branding.salonName?.trim();
+    if (name) {
+      document.title = `${name} — Book Your Appointment`;
+      const og = document.querySelector('meta[property="og:title"]');
+      if (og) og.setAttribute('content', `${name} — Book Your Appointment`);
+    }
+  }, [branding.salonName]);
+
+  // Hold the app behind a branded splash until branding first resolves.
+  if (!ready) return <BrandSplash />;
 
   return (
     <div className="min-h-screen bg-bg-dark">
@@ -87,9 +88,11 @@ function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <AuthProvider>
-          <Layout />
-        </AuthProvider>
+        <BrandingProvider>
+          <AuthProvider>
+            <Layout />
+          </AuthProvider>
+        </BrandingProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );

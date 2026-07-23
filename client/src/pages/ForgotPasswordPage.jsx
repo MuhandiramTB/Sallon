@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api.js';
+import { useBranding } from '../context/BrandingContext.jsx';
 
 export default function ForgotPasswordPage() {
   const [info, setInfo] = useState(null);
-  const [branding, setBranding] = useState({ salonName: '' });
+  const { branding } = useBranding();
 
   useEffect(() => {
     api('/salon-info').then((r) => setInfo(r.data)).catch(() => {});
-    api('/config/branding').then((r) => setBranding(r.data)).catch(() => {});
   }, []);
 
   const phone = info?.phone || '';

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { api } from '../lib/api.js';
+import { useBranding } from '../context/BrandingContext.jsx';
 
 const STEPS = [
   { num: '01', title: 'Choose Service', desc: 'Browse our curated menu' },
@@ -12,15 +12,11 @@ const STEPS = [
 const SLIDE_MS = 5000;
 
 export default function HomePage() {
-  const [branding, setBranding] = useState({ salonName: '', galleryImages: [] });
+  const { branding } = useBranding();
   const [current, setCurrent] = useState(0);
   const navigate = useNavigate();
   const { user } = useAuth();
   const timerRef = useRef(null);
-
-  useEffect(() => {
-    api('/config/branding').then((r) => setBranding(r.data || {})).catch(() => {});
-  }, []);
 
   const slides = Array.isArray(branding.galleryImages) ? branding.galleryImages : [];
   const hasSlides = slides.length > 0;
