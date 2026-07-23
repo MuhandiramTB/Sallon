@@ -210,10 +210,11 @@ export default function Navbar() {
             ) : (
               <Link
                 to="/login"
-                className="text-sm font-semibold bg-gradient-gold text-primary px-4 py-2 rounded-lg active:scale-[0.97] transition-transform flex items-center gap-1.5"
+                aria-label="Sign in"
+                title="Sign in"
+                className="w-10 h-10 flex items-center justify-center bg-gradient-gold text-primary rounded-full shadow-md shadow-accent/20 active:scale-95 transition-transform"
               >
                 {icons.signin}
-                Sign In
               </Link>
             )}
           </div>
