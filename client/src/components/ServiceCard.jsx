@@ -50,7 +50,7 @@ export default function ServiceCard({ service }) {
         {hasDescription && (
           <p className="text-white/70 text-sm mt-1 line-clamp-2">{service.description}</p>
         )}
-        {service.isPackage && service.packageItems?.length > 0 && (
+        {!!service.isPackage && service.packageItems?.length > 0 && (
           <p className="text-xs text-accent mt-2">
             Includes: {service.packageItems.map((i) => i.name).join(' + ')}
           </p>

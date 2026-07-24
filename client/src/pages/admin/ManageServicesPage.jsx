@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api.js';
 import Button from '../../ui/Button.jsx';
 import Input from '../../ui/Input.jsx';
@@ -11,6 +12,7 @@ import Toast from '../../ui/Toast.jsx';
 import { SkeletonPage } from '../../ui/Skeleton.jsx';
 
 export default function ManageServicesPage() {
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -120,7 +122,8 @@ export default function ManageServicesPage() {
     <div className="py-6 animate-fade-in">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h1 className="text-2xl font-bold text-white">Manage Services</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="secondary" onClick={() => navigate('/services')}>👁 Preview Customer View</Button>
           <Button onClick={() => openCreate(false)} disabled={categories.length === 0}>+ Service</Button>
           <Button variant="secondary" onClick={() => openCreate(true)} disabled={regularServices.length === 0}>+ Package</Button>
         </div>

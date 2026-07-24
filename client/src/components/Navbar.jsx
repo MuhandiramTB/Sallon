@@ -119,12 +119,13 @@ export default function Navbar() {
       ];
 
   // The "More" drawer shows the FULL navigation set (with icons) so users have
-  // one complete menu. Admins also get a "View Site" link to preview the public
-  // landing page without signing out.
+  // one complete menu. Admins also get preview links to the customer-facing site
+  // (landing page + services page) so they can see it without signing out.
   const drawerLinks = user?.role === 'admin'
     ? [
         ...adminLinks,
         { to: '/', label: 'View Site', icon: icons.home },
+        { to: '/services', label: 'View Services', icon: icons.services },
       ]
     : [
         { to: '/', label: 'Home', icon: icons.home },
