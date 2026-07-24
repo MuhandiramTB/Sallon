@@ -9,7 +9,7 @@ const router = Router();
 // POST /api/v1/bookings — authenticated customer
 router.post('/', authMiddleware, validate(createBookingSchema), async (req, res, next) => {
   try {
-    const { serviceId, date, startTime, endTime } = req.validatedBody;
+    const { serviceId, date, startTime, endTime, selectedColor } = req.validatedBody;
     const userId = req.user.id;
 
     // Verify service exists and is active
@@ -28,12 +28,12 @@ router.post('/', authMiddleware, validate(createBookingSchema), async (req, res,
     }
 
     const result = await db.prepare(
-      'INSERT INTO bookings (user_id, service_id, booking_date, start_time, end_time, status) VALUES (?, ?, ?, ?, ?, ?)'
-    ).run(userId, serviceId, date, startTime, endTime, 'pending');
+      'INSERT INTO bookings (user_id, service_id, booking_date, start_time, end_time, status, selected_color) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).run(userId, serviceId, date, startTime, endTime, 'pending', selectedColor || '');
 
     const booking = await db.prepare(`
       SELECT b.id, b.booking_date as bookingDate, b.start_time as startTime, b.end_time as endTime,
-             b.status, b.created_at as createdAt,
+             b.status, b.created_at as createdAt, b.selected_color as selectedColor,
              s.name as serviceName, s.price, s.duration_minutes as durationMinutes,
              c.name as categoryName
       FROM bookings b
@@ -57,7 +57,7 @@ router.get('/my', authMiddleware, async (req, res, next) => {
   try {
     const bookings = await db.prepare(`
       SELECT b.id, b.booking_date as bookingDate, b.start_time as startTime, b.end_time as endTime,
-             b.status, b.created_at as createdAt, b.updated_at as updatedAt,
+             b.status, b.created_at as createdAt, b.updated_at as updatedAt, b.selected_color as selectedColor,
              s.name as serviceName, s.price, s.duration_minutes as durationMinutes,
              c.name as categoryName
       FROM bookings b

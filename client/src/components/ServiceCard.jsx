@@ -69,6 +69,23 @@ export default function ServiceCard({ service }) {
             Includes: {service.packageItems.map((i) => i.name).join(' + ')}
           </p>
         )}
+        {Array.isArray(service.colors) && service.colors.length > 0 && (
+          <div className="flex items-center gap-2 mt-3">
+            <div className="flex items-center -space-x-1">
+              {service.colors.slice(0, 6).map((c, i) => (
+                <span
+                  key={i}
+                  title={c.name}
+                  className="w-5 h-5 rounded-full border-2 border-[#1e1e2e] ring-1 ring-white/20"
+                  style={{ backgroundColor: c.hex }}
+                />
+              ))}
+            </div>
+            <span className="text-xs text-white/60">
+              {service.colors.length} color{service.colors.length > 1 ? 's' : ''}
+            </span>
+          </div>
+        )}
         <div className="flex items-center gap-3 mt-3">
           <span className="text-2xl font-bold text-accent">Rs. {service.price}</span>
           <span className="text-sm text-white/70 bg-white/10 px-2.5 py-0.5 rounded-full">

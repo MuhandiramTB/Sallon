@@ -10,11 +10,17 @@ export const updateCategorySchema = z.object({
   displayOrder: z.number().int().min(0).optional(),
 });
 
+const colorSchema = z.object({
+  name: z.string().min(1),
+  hex: z.string().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, 'Invalid color'),
+});
+
 export const createServiceSchema = z.object({
   categoryId: z.number().int().positive('Category is required'),
   name: z.string().min(1, 'Service name is required'),
   description: z.string().optional(),
   imageUrl: z.string().optional(),
+  colors: z.array(colorSchema).max(12).optional(),
   durationMinutes: z.number().int().min(5, 'Duration must be at least 5 minutes'),
   price: z.number().int().min(0, 'Price must be non-negative'),
   isPackage: z.boolean().optional().default(false),
@@ -26,6 +32,7 @@ export const updateServiceSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
   imageUrl: z.string().optional(),
+  colors: z.array(colorSchema).max(12).optional(),
   durationMinutes: z.number().int().min(5).optional(),
   price: z.number().int().min(0).optional(),
   isActive: z.boolean().optional(),

@@ -16,6 +16,7 @@ export default function BookingPage() {
   const navigate = useNavigate();
   const [service, setService] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedColor, setSelectedColor] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -33,15 +34,27 @@ export default function BookingPage() {
       .finally(() => setIsLoading(false));
   }, [serviceId, user, navigate]);
 
+  const hasColors = Array.isArray(service?.colors) && service.colors.length > 0;
+
   const handleBook = async () => {
     if (!user) { navigate('/login'); return; }
     if (!selectedSlot) return;
+    if (hasColors && !selectedColor) {
+      setError('Please choose a color for this service.');
+      return;
+    }
     setIsSubmitting(true);
     setError('');
     try {
       const res = await api('/bookings', {
         method: 'POST',
-        body: { serviceId: Number(serviceId), date: selectedSlot.date, startTime: selectedSlot.startTime, endTime: selectedSlot.endTime },
+        body: {
+          serviceId: Number(serviceId),
+          date: selectedSlot.date,
+          startTime: selectedSlot.startTime,
+          endTime: selectedSlot.endTime,
+          selectedColor: hasColors ? selectedColor : '',
+        },
       });
       setSuccess(res.data);
       setSelectedSlot(null);
@@ -73,6 +86,9 @@ export default function BookingPage() {
             <div className="flex justify-between"><span className="text-white/60 text-sm">Service</span><span className="font-medium text-white text-sm">{success.serviceName}</span></div>
             <div className="flex justify-between"><span className="text-white/60 text-sm">Date</span><span className="font-medium text-white text-sm">{formatDate(success.bookingDate)}</span></div>
             <div className="flex justify-between"><span className="text-white/60 text-sm">Time</span><span className="font-medium text-white text-sm">{formatTime(success.startTime)} - {formatTime(success.endTime)}</span></div>
+            {success.selectedColor && (
+              <div className="flex justify-between"><span className="text-white/60 text-sm">Color</span><span className="font-medium text-white text-sm">{success.selectedColor}</span></div>
+            )}
             <div className="flex justify-between"><span className="text-white/60 text-sm">Price</span><span className="font-bold text-accent">Rs. {success.price}</span></div>
             <div className="flex justify-between"><span className="text-white/60 text-sm">Status</span><span className="text-amber-400 font-medium text-sm">Pending Confirmation</span></div>
           </div>
@@ -105,6 +121,34 @@ export default function BookingPage() {
       </Card>
 
       {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl mb-4 text-sm font-medium animate-slide-up">{error}</div>}
+
+      {hasColors && (
+        <Card className="mb-5">
+          <h3 className="font-semibold text-white mb-3">Choose a color</h3>
+          <div className="flex flex-wrap gap-3">
+            {service.colors.map((c) => {
+              const active = selectedColor === c.name;
+              return (
+                <button
+                  key={c.name}
+                  type="button"
+                  onClick={() => { setSelectedColor(c.name); setError(''); }}
+                  className={`flex flex-col items-center gap-1.5 focus:outline-none`}
+                  title={c.name}
+                >
+                  <span
+                    className={`w-11 h-11 rounded-full border-2 transition-all ${
+                      active ? 'border-accent ring-2 ring-accent/50 scale-110' : 'border-white/20'
+                    }`}
+                    style={{ backgroundColor: c.hex }}
+                  />
+                  <span className={`text-xs ${active ? 'text-accent font-medium' : 'text-white/60'}`}>{c.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Card>
+      )}
 
       <Card><SlotPicker serviceId={Number(serviceId)} onSelectSlot={setSelectedSlot} /></Card>
 

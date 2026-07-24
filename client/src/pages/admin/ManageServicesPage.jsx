@@ -18,7 +18,7 @@ export default function ManageServicesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState(null);
-  const [form, setForm] = useState({ categoryId: '', name: '', description: '', imageUrl: '', durationMinutes: 30, price: 0, isPackage: false, packageServiceIds: [] });
+  const [form, setForm] = useState({ categoryId: '', name: '', description: '', imageUrl: '', colors: [], durationMinutes: 30, price: 0, isPackage: false, packageServiceIds: [] });
   const [imageError, setImageError] = useState('');
   const [error, setError] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -44,7 +44,7 @@ export default function ManageServicesPage() {
   const openCreate = (isPackage = false) => {
     setEditingService(null);
     setImageError('');
-    setForm({ categoryId: categories[0]?.id || '', name: '', description: '', imageUrl: '', durationMinutes: 30, price: 0, isPackage, packageServiceIds: [] });
+    setForm({ categoryId: categories[0]?.id || '', name: '', description: '', imageUrl: '', colors: [], durationMinutes: 30, price: 0, isPackage, packageServiceIds: [] });
     setShowModal(true);
   };
 
@@ -54,6 +54,7 @@ export default function ManageServicesPage() {
     setForm({
       categoryId: svc.categoryId, name: svc.name, description: svc.description || '',
       imageUrl: svc.imageUrl || '',
+      colors: Array.isArray(svc.colors) ? svc.colors : [],
       durationMinutes: svc.durationMinutes, price: svc.price,
       isPackage: !!svc.isPackage,
       packageServiceIds: svc.packageItems?.map((i) => i.id) || [],
@@ -78,6 +79,13 @@ export default function ManageServicesPage() {
     reader.readAsDataURL(file);
   };
 
+  // --- Color options (e.g. for hair coloring services) ---
+  const addColor = () => setForm((f) => ({ ...f, colors: [...(f.colors || []), { name: '', hex: '#c9a96e' }] }));
+  const updateColor = (idx, key, value) =>
+    setForm((f) => ({ ...f, colors: f.colors.map((c, i) => (i === idx ? { ...c, [key]: value } : c)) }));
+  const removeColor = (idx) =>
+    setForm((f) => ({ ...f, colors: f.colors.filter((_, i) => i !== idx) }));
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -86,6 +94,8 @@ export default function ManageServicesPage() {
       categoryId: Number(form.categoryId),
       durationMinutes: Number(form.durationMinutes),
       price: Number(form.price),
+      // Drop half-filled color rows (name required by the API).
+      colors: (form.colors || []).filter((c) => c.name?.trim() && c.hex).map((c) => ({ name: c.name.trim(), hex: c.hex })),
     };
     try {
       if (editingService) await api(`/services/${editingService.id}`, { method: 'PUT', body });
@@ -253,6 +263,41 @@ export default function ManageServicesPage() {
             <p className="text-xs text-white/50 mt-1.5">PNG or JPG, max 250 KB. Wide (landscape) images look best on cards.</p>
             {imageError && <p className="text-red-400 text-xs mt-1.5">{imageError}</p>}
           </div>
+
+          {/* Color options — for services like hair coloring */}
+          {!form.isPackage && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-white/70 mb-1.5">Color Options <span className="text-white/40 font-normal">(optional — e.g. hair coloring)</span></label>
+              {form.colors?.length > 0 && (
+                <div className="space-y-2 mb-2">
+                  {form.colors.map((c, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={c.hex}
+                        onChange={(e) => updateColor(idx, 'hex', e.target.value)}
+                        className="w-10 h-10 rounded-lg border border-white/10 bg-transparent cursor-pointer flex-shrink-0"
+                        title="Pick color"
+                      />
+                      <input
+                        type="text"
+                        value={c.name}
+                        onChange={(e) => updateColor(idx, 'name', e.target.value)}
+                        placeholder="Color name (e.g. Red)"
+                        className="flex-1 min-w-0 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-accent min-h-[40px]"
+                      />
+                      <button type="button" onClick={() => removeColor(idx)}
+                        className="w-9 h-9 flex items-center justify-center text-red-400 hover:bg-red-500/10 rounded-lg flex-shrink-0" title="Remove">✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <button type="button" onClick={addColor}
+                className="inline-flex items-center gap-1.5 text-sm text-accent hover:text-accent-hover font-medium">
+                + Add color
+              </button>
+            </div>
+          )}
 
           {form.isPackage && regularServices.length > 0 && (
             <div className="mb-4">

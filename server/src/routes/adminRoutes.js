@@ -44,7 +44,7 @@ router.get('/bookings', authMiddleware, adminMiddleware, async (req, res, next) 
 
     let query = `
       SELECT b.id, b.booking_date as bookingDate, b.start_time as startTime, b.end_time as endTime,
-             b.status, b.created_at as createdAt, b.updated_at as updatedAt,
+             b.status, b.created_at as createdAt, b.updated_at as updatedAt, b.selected_color as selectedColor,
              s.name as serviceName, s.price, s.duration_minutes as durationMinutes,
              c.name as categoryName, c.id as categoryId,
              u.name as customerName, u.email as customerEmail, u.phone as customerPhone
@@ -72,7 +72,7 @@ router.get('/bookings', authMiddleware, adminMiddleware, async (req, res, next) 
 // POST /api/v1/admin/bookings — admin creates booking for a customer (walk-in / phone call)
 router.post('/bookings', authMiddleware, adminMiddleware, validate(adminCreateBookingSchema), async (req, res, next) => {
   try {
-    const { customerName, customerPhone, serviceId, date, startTime, endTime, status } = req.validatedBody;
+    const { customerName, customerPhone, serviceId, date, startTime, endTime, selectedColor, status } = req.validatedBody;
 
     // Find existing customer by phone OR email
     let customer = await db.prepare('SELECT id FROM users WHERE phone = ?').get(customerPhone);
@@ -108,12 +108,12 @@ router.post('/bookings', authMiddleware, adminMiddleware, validate(adminCreateBo
     if (overlap) return res.status(409).json({ error: 'This slot is already booked' });
 
     const result = await db.prepare(
-      'INSERT INTO bookings (user_id, service_id, booking_date, start_time, end_time, status) VALUES (?, ?, ?, ?, ?, ?)'
-    ).run(customer.id, serviceId, date, startTime, endTime, status || 'confirmed');
+      'INSERT INTO bookings (user_id, service_id, booking_date, start_time, end_time, status, selected_color) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).run(customer.id, serviceId, date, startTime, endTime, status || 'confirmed', selectedColor || '');
 
     const booking = await db.prepare(`
       SELECT b.id, b.booking_date as bookingDate, b.start_time as startTime, b.end_time as endTime,
-             b.status, s.name as serviceName, s.price,
+             b.status, b.selected_color as selectedColor, s.name as serviceName, s.price,
              u.name as customerName, u.phone as customerPhone
       FROM bookings b
       JOIN services s ON b.service_id = s.id

@@ -294,6 +294,9 @@ export default function ManageBookingsPage() {
               <div className="space-y-1.5">
                 <div className="font-medium text-white">{b.customerName}</div>
                 <div className="text-sm text-white/80">{b.serviceName} &middot; Rs. {b.price}</div>
+                {b.selectedColor && (
+                  <div className="text-xs text-accent font-medium">🎨 Color: {b.selectedColor}</div>
+                )}
                 {b.customerPhone ? (
                   <a
                     href={`tel:${b.customerPhone}`}

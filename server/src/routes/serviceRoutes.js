@@ -9,22 +9,37 @@ const router = Router();
 
 const SERVICE_SELECT = `
   SELECT s.id, s.category_id as categoryId, s.name, s.description,
-         s.image_url as imageUrl,
+         s.image_url as imageUrl, s.colors,
          s.duration_minutes as durationMinutes, s.price, s.is_active as isActive,
          s.is_package as isPackage, c.name as categoryName
   FROM services s
   JOIN categories c ON s.category_id = c.id
 `;
 
+// colors is stored as a JSON string; expose it as an array of {name, hex}.
+function parseColors(service) {
+  if (!service) return service;
+  let colors = [];
+  try {
+    const parsed = JSON.parse(service.colors || '[]');
+    if (Array.isArray(parsed)) colors = parsed.filter((c) => c && c.name && c.hex);
+  } catch {
+    colors = [];
+  }
+  return { ...service, colors };
+}
+
 async function attachPackageItems(service) {
-  if (!service || !service.isPackage) return service;
+  if (!service) return service;
+  const withColors = parseColors(service);
+  if (!withColors.isPackage) return withColors;
   const items = await db.prepare(`
     SELECT s.id, s.name, s.price, s.duration_minutes as durationMinutes
     FROM package_items pi
     JOIN services s ON pi.service_id = s.id
     WHERE pi.package_id = ?
-  `).all(service.id);
-  return { ...service, packageItems: items };
+  `).all(withColors.id);
+  return { ...withColors, packageItems: items };
 }
 
 // GET /api/v1/services — public
@@ -70,15 +85,16 @@ router.get('/:id', async (req, res, next) => {
 // POST /api/v1/services — admin
 router.post('/', authMiddleware, adminMiddleware, validate(createServiceSchema), async (req, res, next) => {
   try {
-    const { categoryId, name, description, imageUrl, durationMinutes, price, isPackage, packageServiceIds } = req.validatedBody;
+    const { categoryId, name, description, imageUrl, colors, durationMinutes, price, isPackage, packageServiceIds } = req.validatedBody;
 
     const category = await db.prepare('SELECT id FROM categories WHERE id = ?').get(categoryId);
     if (!category) return res.status(400).json({ error: 'Category not found' });
 
     const cleanDesc = (description && description.trim() && description.trim() !== '0') ? description.trim() : null;
+    const colorsJson = JSON.stringify(Array.isArray(colors) ? colors : []);
     const result = await db.prepare(
-      'INSERT INTO services (category_id, name, description, image_url, duration_minutes, price, is_package) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    ).run(categoryId, name, cleanDesc, imageUrl || '', durationMinutes, price, isPackage ? 1 : 0);
+      'INSERT INTO services (category_id, name, description, image_url, colors, duration_minutes, price, is_package) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    ).run(categoryId, name, cleanDesc, imageUrl || '', colorsJson, durationMinutes, price, isPackage ? 1 : 0);
 
     // Add package items if this is a package
     if (isPackage && packageServiceIds?.length) {
@@ -102,7 +118,7 @@ router.put('/:id', authMiddleware, adminMiddleware, validate(updateServiceSchema
     const existing = await db.prepare('SELECT * FROM services WHERE id = ?').get(id);
     if (!existing) return res.status(404).json({ error: 'Service not found' });
 
-    const { categoryId, name, description, imageUrl, durationMinutes, price, isActive, isPackage, packageServiceIds } = req.validatedBody;
+    const { categoryId, name, description, imageUrl, colors, durationMinutes, price, isActive, isPackage, packageServiceIds } = req.validatedBody;
 
     await db.prepare(`
       UPDATE services SET
@@ -110,6 +126,7 @@ router.put('/:id', authMiddleware, adminMiddleware, validate(updateServiceSchema
         name = COALESCE(?, name),
         description = COALESCE(?, description),
         image_url = COALESCE(?, image_url),
+        colors = COALESCE(?, colors),
         duration_minutes = COALESCE(?, duration_minutes),
         price = COALESCE(?, price),
         is_active = COALESCE(?, is_active),
@@ -118,6 +135,7 @@ router.put('/:id', authMiddleware, adminMiddleware, validate(updateServiceSchema
     `).run(
       categoryId ?? null, name ?? null, description ?? null,
       imageUrl ?? null,
+      colors !== undefined ? JSON.stringify(colors) : null,
       durationMinutes ?? null, price ?? null,
       isActive !== undefined ? (isActive ? 1 : 0) : null,
       isPackage !== undefined ? (isPackage ? 1 : 0) : null, id
