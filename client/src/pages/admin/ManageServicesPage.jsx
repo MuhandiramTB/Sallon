@@ -131,12 +131,36 @@ export default function ManageServicesPage() {
 
   return (
     <div className="py-6 animate-fade-in">
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-white">Manage Services</h1>
-        <div className="flex gap-2 flex-wrap">
-          <Button variant="secondary" onClick={() => navigate('/services')}>👁 Preview Customer View</Button>
-          <Button onClick={() => openCreate(false)} disabled={categories.length === 0}>+ Service</Button>
-          <Button variant="secondary" onClick={() => openCreate(true)} disabled={regularServices.length === 0}>+ Package</Button>
+      <div className="flex items-center justify-between mb-6 gap-2">
+        <h1 className="text-xl sm:text-2xl font-bold text-white flex-shrink-0">Manage Services</h1>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate('/services')}
+            aria-label="Preview customer view"
+            title="Preview customer view"
+            className="w-10 h-10 flex items-center justify-center bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+          </button>
+          <button
+            onClick={() => openCreate(false)}
+            disabled={categories.length === 0}
+            aria-label="Add service"
+            title="Add service"
+            className="w-10 h-10 flex items-center justify-center bg-gradient-gold text-primary rounded-lg font-bold hover:shadow-lg hover:shadow-accent/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+          </button>
+          <button
+            onClick={() => openCreate(true)}
+            disabled={regularServices.length === 0}
+            aria-label="Add package"
+            title="Add package"
+            className="w-10 h-10 flex items-center justify-center bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+          >
+            {/* package/box + plus */}
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+          </button>
         </div>
       </div>
 
