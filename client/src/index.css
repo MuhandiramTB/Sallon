@@ -34,12 +34,6 @@
   }
 }
 
-/* Theme toggle plumbing. The app is dark-first; this maps the dark-app surface
-   token so a light preference lightens the base canvas. Full per-page light
-   styling is a follow-up — this establishes the switch + persisted preference. */
-:root[data-theme='light'] {
-  --color-bg-dark: #f4f1ec;
-}
 
 @layer utilities {
   .animate-fade-in { animation: fadeIn 300ms ease-out; }
