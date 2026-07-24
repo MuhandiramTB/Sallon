@@ -36,7 +36,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="h-[calc(100vh-57px)] bg-gradient-hero text-white relative overflow-hidden flex flex-col">
+    <div className="min-h-[calc(100svh-3.5rem)] bg-gradient-hero text-white relative overflow-hidden flex flex-col">
       {/* Slideshow background (falls back to gradient glow when no images) */}
       {hasSlides ? (
         <div className="absolute inset-0">
@@ -60,10 +60,10 @@ export default function HomePage() {
       )}
 
       {/* Hero content */}
-      <div className="flex-1 flex items-center justify-center relative z-10">
-        <div className="max-w-2xl mx-auto text-center px-4">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm text-white/70 mb-6 animate-fade-in">
-            <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+      <div className="flex-1 flex items-center justify-center relative z-10 px-5 py-8">
+        <div className="w-full max-w-2xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm text-white/80 mb-5 sm:mb-6 animate-fade-in">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse flex-shrink-0" />
             Now accepting online bookings
           </div>
 
@@ -72,53 +72,61 @@ export default function HomePage() {
             <img
               src={branding.logoUrl}
               alt={branding.salonName || ''}
-              className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-accent/50 bg-white/10 shadow-xl shadow-accent/20 mx-auto mb-5 animate-scale-in"
+              className="w-20 h-20 sm:w-28 sm:h-28 rounded-full object-cover border-2 border-accent/50 bg-white/10 shadow-xl shadow-accent/20 mx-auto mb-4 sm:mb-5 animate-scale-in"
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
           )}
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 leading-tight animate-slide-up drop-shadow-lg">
-            <span className="block text-2xl sm:text-3xl font-medium text-white/80 mb-1">Welcome to</span>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight animate-slide-up drop-shadow-lg">
+            <span className="block text-xl sm:text-3xl font-medium text-white/80 mb-1">Welcome to</span>
             <span className="text-gradient">{branding.salonName || ' '}</span>
           </h1>
-          <p className="text-base sm:text-lg text-white/80 mb-8 max-w-md mx-auto animate-slide-up drop-shadow">
+          <p className="text-sm sm:text-lg text-white/80 mb-7 sm:mb-8 max-w-md mx-auto animate-slide-up drop-shadow">
             Your premium grooming experience. Book your appointment in seconds.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center animate-slide-up">
-            <button onClick={() => navigate(user ? '/services' : '/login')}
-              className="bg-gradient-gold text-primary font-semibold px-8 py-3.5 rounded-xl text-base hover:shadow-lg hover:shadow-accent/30 transition-all active:scale-[0.97] min-h-[48px]">
+
+          <div className="animate-slide-up">
+            <button
+              onClick={() => navigate(user ? '/services' : '/login')}
+              className="w-full sm:w-auto bg-gradient-gold text-primary font-semibold px-8 py-4 rounded-xl text-base sm:text-lg hover:shadow-lg hover:shadow-accent/30 transition-all active:scale-[0.97] min-h-[52px] inline-flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
               Book Appointment
             </button>
           </div>
 
           {/* Slide dots */}
           {slides.length > 1 && (
-            <div className="flex justify-center gap-2 mt-8">
+            <div className="flex justify-center gap-1 mt-7">
               {slides.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => goTo(i)}
                   aria-label={`Go to slide ${i + 1}`}
-                  className={`h-2 rounded-full transition-all ${
-                    i === current ? 'w-6 bg-accent' : 'w-2 bg-white/40 hover:bg-white/60'
-                  }`}
-                />
+                  className="p-2 -m-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 rounded-full"
+                >
+                  <span className={`block h-2 rounded-full transition-all ${i === current ? 'w-6 bg-accent' : 'w-2 bg-white/40'}`} />
+                </button>
               ))}
             </div>
           )}
         </div>
       </div>
 
-      {/* Bottom: How it works */}
-      <div className="relative z-10 pb-24 md:pb-8">
-        <div className="flex justify-center gap-8 sm:gap-16 px-4">
+      {/* Bottom: How it works — responsive card row */}
+      <div className="relative z-10 px-5 pb-24 md:pb-10">
+        <div className="max-w-3xl mx-auto grid grid-cols-3 gap-2.5 sm:gap-4">
           {STEPS.map((step, i) => (
-            <div key={i} className="text-center animate-fade-in" style={{ animationDelay: `${i * 150}ms` }}>
-              <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto mb-2">
-                <span className="text-accent font-bold text-sm">{step.num}</span>
+            <div
+              key={i}
+              className="flex flex-col items-center text-center bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl sm:rounded-2xl px-2 py-3 sm:px-4 sm:py-5 animate-fade-in"
+              style={{ animationDelay: `${i * 150}ms` }}
+            >
+              <div className="w-9 h-9 sm:w-11 sm:h-11 bg-accent/15 border border-accent/20 rounded-full flex items-center justify-center mb-2 sm:mb-3">
+                <span className="text-accent font-bold text-xs sm:text-base">{step.num}</span>
               </div>
-              <h3 className="font-medium text-white/90 text-sm drop-shadow">{step.title}</h3>
-              <p className="text-xs text-white/70 mt-0.5 hidden sm:block drop-shadow">{step.desc}</p>
+              <h3 className="font-semibold text-white text-xs sm:text-sm leading-tight">{step.title}</h3>
+              <p className="text-[11px] sm:text-xs text-white/60 mt-1 leading-snug">{step.desc}</p>
             </div>
           ))}
         </div>
