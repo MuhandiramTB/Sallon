@@ -155,6 +155,19 @@ router.patch('/bookings/:id', authMiddleware, adminMiddleware, validate(updateBo
   }
 });
 
+// DELETE /api/v1/admin/bookings/:id — permanently remove a booking record
+router.delete('/bookings/:id', authMiddleware, adminMiddleware, async (req, res, next) => {
+  try {
+    const booking = await db.prepare('SELECT id FROM bookings WHERE id = ?').get(req.params.id);
+    if (!booking) return res.status(404).json({ error: 'Booking not found' });
+
+    await db.prepare('DELETE FROM bookings WHERE id = ?').run(req.params.id);
+    res.json({ data: { message: 'Booking deleted' } });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/v1/admin/users — list all customers with booking counts
 router.get('/users', authMiddleware, adminMiddleware, async (req, res, next) => {
   try {

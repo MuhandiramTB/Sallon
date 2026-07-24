@@ -35,6 +35,8 @@ export default function ManageBookingsPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [actionTarget, setActionTarget] = useState(null);
   const [isActioning, setIsActioning] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [toast, setToast] = useState(null); // { message, type }
   const [salonName, setSalonName] = useState('our salon');
   // Track which bookings had their confirmation WhatsApp sent (persists in localStorage)
@@ -118,6 +120,20 @@ export default function ManageBookingsPage() {
       setActionTarget(null);
       showError(err.message);
     } finally { setIsActioning(false); }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await api(`/admin/bookings/${deleteTarget.id}`, { method: 'DELETE' });
+      setDeleteTarget(null);
+      loadBookings();
+      showSuccess('Booking deleted');
+    } catch (err) {
+      setDeleteTarget(null);
+      showError(err.message);
+    } finally { setIsDeleting(false); }
   };
 
   const actionConfig = actionTarget ? STATUS_ACTIONS[actionTarget.action] : {};
@@ -263,7 +279,17 @@ export default function ManageBookingsPage() {
                   <div className="text-lg font-bold text-accent">{formatTime(b.startTime)}</div>
                   <div className="text-xs text-white/60">{formatDate(b.bookingDate)}</div>
                 </div>
-                <BookingStatusBadge status={b.status} />
+                <div className="flex items-center gap-2">
+                  <BookingStatusBadge status={b.status} />
+                  <button
+                    onClick={() => setDeleteTarget(b)}
+                    className="w-8 h-8 flex items-center justify-center text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
+                    title="Delete booking record"
+                    aria-label="Delete booking"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
+                </div>
               </div>
               <div className="space-y-1.5">
                 <div className="font-medium text-white">{b.customerName}</div>
@@ -359,6 +385,22 @@ export default function ManageBookingsPage() {
         confirmLabel={actionConfig.confirmLabel || 'Confirm'}
         cancelLabel="Go Back"
         variant={actionConfig.variant || 'warning'}
+      />
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        isLoading={isDeleting}
+        title="Delete Booking Record?"
+        message={
+          deleteTarget
+            ? `Permanently delete ${deleteTarget.customerName || 'this customer'}'s booking for ${deleteTarget.serviceName || 'the service'} on ${formatDate(deleteTarget.bookingDate)}? This cannot be undone.`
+            : ''
+        }
+        confirmLabel="Yes, Delete"
+        cancelLabel="Keep It"
+        variant="danger"
       />
 
       {toast && <Toast message={toast.message} type={toast.type || 'error'} onClose={() => setToast(null)} />}
