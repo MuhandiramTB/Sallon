@@ -23,11 +23,14 @@ export default function ManageServicesPage() {
   const [error, setError] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [toggleTarget, setToggleTarget] = useState(null);
+  const [isToggling, setIsToggling] = useState(false);
   const [toast, setToast] = useState('');
 
   const loadData = async () => {
     try {
-      const [s, c] = await Promise.all([api('/services'), api('/categories')]);
+      // Admin endpoint returns ALL services, including inactive ones.
+      const [s, c] = await Promise.all([api('/services/admin/all'), api('/categories')]);
       setServices(s.data);
       setCategories(c.data);
     } catch (err) { setError(err.message); }
@@ -92,9 +95,17 @@ export default function ManageServicesPage() {
     } catch (err) { setError(err.message); }
   };
 
-  const toggleActive = async (svc) => {
-    try { await api(`/services/${svc.id}`, { method: 'PUT', body: { isActive: !svc.isActive } }); loadData(); }
-    catch (err) { setToast(err.message); }
+  const confirmToggle = async () => {
+    if (!toggleTarget) return;
+    setIsToggling(true);
+    try {
+      await api(`/services/${toggleTarget.id}`, { method: 'PUT', body: { isActive: !toggleTarget.isActive } });
+      setToggleTarget(null);
+      loadData();
+    } catch (err) {
+      setToggleTarget(null);
+      setToast(err.message);
+    } finally { setIsToggling(false); }
   };
 
   const handleDelete = async () => {
@@ -151,8 +162,11 @@ export default function ManageServicesPage() {
                   <h3 className="font-semibold text-white truncate">{svc.name || 'Unnamed Service'}</h3>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <span className="text-xs text-accent bg-accent/10 px-2 py-0.5 rounded-full">{svc.categoryName || 'No category'}</span>
-                    {svc.isPackage && (
+                    {!!svc.isPackage && (
                       <span className="text-xs font-semibold text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded-full">Package</span>
+                    )}
+                    {!svc.isActive && (
+                      <span className="text-xs font-semibold text-white/50 bg-white/10 px-2 py-0.5 rounded-full">Inactive</span>
                     )}
                   </div>
                 </div>
@@ -163,7 +177,7 @@ export default function ManageServicesPage() {
                 <span className="text-white/70 text-sm">&middot; {svc.durationMinutes ?? '?'} min</span>
               </div>
 
-              {svc.isPackage && svc.packageItems?.length > 0 && (
+              {!!svc.isPackage && svc.packageItems?.length > 0 && (
                 <p className="text-xs text-white/60 mb-3 line-clamp-2">
                   <span className="text-white/40">Includes: </span>
                   {svc.packageItems.map((i) => i.name).join(' + ')}
@@ -171,7 +185,7 @@ export default function ManageServicesPage() {
               )}
 
               <div className="flex items-center gap-2 flex-wrap pt-3 border-t border-white/5">
-                <button onClick={() => toggleActive(svc)}
+                <button onClick={() => setToggleTarget(svc)}
                   className={`text-xs font-medium px-3 py-1.5 rounded-lg min-h-[36px] transition-colors ${svc.isActive ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}>
                   {svc.isActive ? 'Active' : 'Inactive'}
                 </button>
@@ -259,6 +273,24 @@ export default function ManageServicesPage() {
         confirmLabel="Yes, Delete"
         cancelLabel="Keep It"
         variant="danger"
+      />
+
+      <ConfirmModal
+        isOpen={!!toggleTarget}
+        onClose={() => setToggleTarget(null)}
+        onConfirm={confirmToggle}
+        isLoading={isToggling}
+        title={toggleTarget?.isActive ? 'Deactivate Service?' : 'Activate Service?'}
+        message={
+          toggleTarget
+            ? toggleTarget.isActive
+              ? `"${toggleTarget.name}" will be hidden from customers and can't be booked. You can reactivate it anytime.`
+              : `"${toggleTarget.name}" will become visible to customers and available for booking.`
+            : ''
+        }
+        confirmLabel={toggleTarget?.isActive ? 'Yes, Deactivate' : 'Yes, Activate'}
+        cancelLabel="Cancel"
+        variant="warning"
       />
 
       {toast && <Toast message={toast} type="error" onClose={() => setToast('')} />}

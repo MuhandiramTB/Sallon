@@ -44,6 +44,18 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// GET /api/v1/services/admin/all — admin: returns ALL services incl. inactive
+router.get('/admin/all', authMiddleware, adminMiddleware, async (req, res, next) => {
+  try {
+    const query = SERVICE_SELECT + ' ORDER BY s.is_package ASC, c.display_order ASC, s.name ASC';
+    const rows = await db.prepare(query).all();
+    const services = await Promise.all(rows.map(attachPackageItems));
+    res.json({ data: services });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/v1/services/:id — public
 router.get('/:id', async (req, res, next) => {
   try {

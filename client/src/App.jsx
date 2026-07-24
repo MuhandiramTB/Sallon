@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { BrandingProvider, useBranding } from './context/BrandingContext.jsx';
-import { ThemeProvider } from './context/ThemeContext.jsx';
 import BrandSplash from './components/BrandSplash.jsx';
 import WhatsAppFab from './components/WhatsAppFab.jsx';
 import Navbar from './components/Navbar.jsx';
@@ -100,13 +99,11 @@ function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <ThemeProvider>
-          <BrandingProvider>
-            <AuthProvider>
-              <Layout />
-            </AuthProvider>
-          </BrandingProvider>
-        </ThemeProvider>
+        <BrandingProvider>
+          <AuthProvider>
+            <Layout />
+          </AuthProvider>
+        </BrandingProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );
