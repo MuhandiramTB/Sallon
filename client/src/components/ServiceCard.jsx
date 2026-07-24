@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import Button from '../ui/Button.jsx';
+import Lightbox from '../ui/Lightbox.jsx';
 
 export default function ServiceCard({ service }) {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [showImage, setShowImage] = useState(false);
 
   const handleBook = () => {
     if (user?.role === 'admin') {
@@ -24,12 +27,23 @@ export default function ServiceCard({ service }) {
       {/* Image (or elegant gradient fallback) */}
       <div className="relative h-44 overflow-hidden">
         {service.imageUrl ? (
-          <img
-            src={service.imageUrl}
-            alt={service.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }}
-          />
+          <button
+            type="button"
+            onClick={() => setShowImage(true)}
+            className="w-full h-full block cursor-zoom-in"
+            aria-label={`View ${service.name} image`}
+          >
+            <img
+              src={service.imageUrl}
+              alt={service.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+            {/* Zoom hint on hover */}
+            <span className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" /></svg>
+            </span>
+          </button>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-primary via-[#2d2d44] to-primary flex items-center justify-center">
             <span className="text-5xl font-bold text-accent/40 group-hover:text-accent/60 transition-colors">
@@ -65,6 +79,10 @@ export default function ServiceCard({ service }) {
           {user?.role === 'admin' ? 'Book for Customer' : 'Book Now'}
         </Button>
       </div>
+
+      {showImage && (
+        <Lightbox src={service.imageUrl} alt={service.name} onClose={() => setShowImage(false)} />
+      )}
     </div>
   );
 }
