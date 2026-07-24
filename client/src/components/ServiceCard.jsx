@@ -39,8 +39,8 @@ export default function ServiceCard({ service }) {
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
-            {/* Zoom hint on hover */}
-            <span className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* Zoom hint — always visible on mobile (no hover), reveal on hover for desktop */}
+            <span className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" /></svg>
             </span>
           </button>
