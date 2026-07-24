@@ -15,7 +15,7 @@ export default function MyBookingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [isCancelling, setIsCancelling] = useState(false);
-  const [toast, setToast] = useState('');
+  const [toast, setToast] = useState(null); // { message, type }
   const navigate = useNavigate();
 
   const loadBookings = async () => {
@@ -30,10 +30,11 @@ export default function MyBookingsPage() {
     try {
       await api(`/bookings/${cancelTarget.id}/cancel`, { method: 'PATCH' });
       setCancelTarget(null);
+      setToast({ message: 'Booking cancelled', type: 'success' });
       loadBookings();
     } catch (err) {
       setCancelTarget(null);
-      setToast(err.message);
+      setToast({ message: err.message, type: 'error' });
     } finally { setIsCancelling(false); }
   };
 
@@ -130,7 +131,7 @@ export default function MyBookingsPage() {
         cancelLabel="Keep It"
         variant="danger"
       />
-      {toast && <Toast message={toast} type="error" onClose={() => setToast('')} />}
+      {toast && <Toast message={toast.message} type={toast.type || 'error'} onClose={() => setToast(null)} />}
     </div>
   );
 }

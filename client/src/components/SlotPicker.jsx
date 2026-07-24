@@ -3,12 +3,13 @@ import { api } from '../lib/api.js';
 import { formatTime, getNextDays } from '../lib/formatDate.js';
 
 export default function SlotPicker({ serviceId, onSelectSlot }) {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const dates = getNextDays(14);
+  // Auto-select the first day so the time grid shows immediately (no empty state on load).
+  const [selectedDate, setSelectedDate] = useState(dates[0] || null);
   const [slots, setSlots] = useState([]);
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const dates = getNextDays(14);
 
   useEffect(() => {
     if (!selectedDate) return;
@@ -38,7 +39,7 @@ export default function SlotPicker({ serviceId, onSelectSlot }) {
           <button
             key={d}
             onClick={() => setSelectedDate(d)}
-            className={`flex-shrink-0 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 min-h-[44px] min-w-[80px] text-center snap-start ${
+            className={`flex-shrink-0 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 min-h-[44px] min-w-[80px] text-center snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 ${
               selectedDate === d
                 ? 'bg-gradient-to-b from-accent to-amber-700 text-white shadow-md'
                 : 'bg-white/5 text-white/80 border border-white/10 hover:border-accent/30'
@@ -76,10 +77,10 @@ export default function SlotPicker({ serviceId, onSelectSlot }) {
                 <button
                   key={slot.startTime}
                   onClick={() => handleSlotClick(slot)}
-                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 min-h-[44px] ${
+                  className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 ${
                     selectedSlot?.startTime === slot.startTime
                       ? 'bg-gradient-to-b from-accent to-amber-700 text-white shadow-md'
-                      : 'bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 active:scale-[0.97]'
+                      : 'bg-white/5 text-white/80 border border-white/10 hover:border-accent/40 hover:bg-white/10 active:scale-[0.97]'
                   }`}
                 >
                   {formatTime(slot.startTime)}

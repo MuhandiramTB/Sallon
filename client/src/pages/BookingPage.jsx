@@ -77,8 +77,8 @@ export default function BookingPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Booking Confirmed!</h2>
-          <p className="text-white/60 mb-5">Your appointment has been booked. Let the salon know on WhatsApp:</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Booking Request Sent!</h2>
+          <p className="text-white/60 mb-5">Your slot is reserved. Tap below to notify the salon on WhatsApp — they'll confirm shortly.</p>
           <div className="mb-5">
             <SendBookingWhatsApp booking={success} customer={user} />
           </div>
@@ -96,7 +96,7 @@ export default function BookingPage() {
             <ContactStrip />
           </div>
           <div className="flex gap-3">
-            <Button onClick={() => navigate('/my-bookings')} variant="secondary" className="flex-1">My Bookings</Button>
+            <Button onClick={() => navigate('/my-bookings')} className="flex-1">My Bookings</Button>
             <Button onClick={() => navigate('/services')} variant="secondary" className="flex-1">Book Another</Button>
           </div>
         </Card>
@@ -105,7 +105,7 @@ export default function BookingPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-6 animate-fade-in">
+    <div className={`max-w-2xl mx-auto py-6 animate-fade-in ${selectedSlot ? 'pb-32 md:pb-6' : ''}`}>
       <Card className="mb-5">
         <div className="flex items-start justify-between">
           <div>
@@ -153,13 +153,13 @@ export default function BookingPage() {
       <Card><SlotPicker serviceId={Number(serviceId)} onSelectSlot={setSelectedSlot} /></Card>
 
       {selectedSlot && (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#1e1e2e]/80 backdrop-blur-xl border-t border-white/10 p-4 shadow-xl z-30 animate-slide-up sm:static sm:mt-5 sm:border-0 sm:shadow-none sm:p-0 sm:bg-transparent sm:backdrop-blur-none">
-          <div className="container mx-auto max-w-2xl flex items-center justify-between gap-4">
-            <div className="text-sm">
+        <div className="fixed bottom-[calc(56px+env(safe-area-inset-bottom))] left-0 right-0 bg-[#1e1e2e]/90 backdrop-blur-xl border-t border-white/10 p-4 shadow-2xl z-50 animate-slide-up md:static md:bottom-auto md:mt-5 md:border-0 md:shadow-none md:p-0 md:bg-transparent md:backdrop-blur-none md:z-auto">
+          <div className="container mx-auto max-w-2xl flex items-center justify-between gap-3">
+            <div className="text-sm min-w-0">
               <span className="text-white/60">{formatDate(selectedSlot.date)}</span>
               <span className="font-semibold text-white ml-2">{formatTime(selectedSlot.startTime)}</span>
             </div>
-            <Button onClick={handleBook} isLoading={isSubmitting} className="min-w-[180px]">
+            <Button onClick={handleBook} isLoading={isSubmitting} className="flex-shrink-0 min-w-[150px] sm:min-w-[180px]">
               Confirm — Rs. {service.price}
             </Button>
           </div>
