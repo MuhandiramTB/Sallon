@@ -51,9 +51,9 @@ export default function ServiceCard({ service }) {
             </span>
           </div>
         )}
-        {/* Gradient scrim for text legibility + category chip */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <span className="absolute top-3 right-3 text-xs font-medium text-accent bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full">
+        {/* Gradient scrim for text legibility — must not block taps on the image button */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+        <span className="absolute top-3 right-3 text-xs font-medium text-accent bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full pointer-events-none">
           {service.categoryName}
         </span>
       </div>
